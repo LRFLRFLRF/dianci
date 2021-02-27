@@ -4,7 +4,7 @@ function get_res_ap()
     
     yuan_data_path = 'E:\Desktop\dianci\Python_code\mat\';  %106to114_oneDim 文件路径
     node_data_path = 'E:\Desktop\dianci\Python_code\mat\mat_xls_file\';    %node文件路径
-    yuan_data_name = '106to114_oneDim';
+    yuan_data_name = '106to114';
     node_data_name = 'wp_4_0_rec';      %得到变量名字符串
     
     
@@ -22,9 +22,11 @@ function get_res_ap()
 
 
     %写入excel
-    xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_DEN.xls'], data_node)    %写入指定结点的 construc波形
+    write_date_den = [data_yuan(:,1:5) data_node];  %拼接原表格前五列时间数据
+    xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_DEN.xls'], write_date_den)    %写入指定结点的 construc波形
 
-    res = data_yuan - data_node;
-    xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_RES.xls'], res)    %写入指定结点的 残差波形
+    res = data_yuan(:,6) - data_node; %计算残差
+    write_date_res = [data_yuan(:,1:5) res];
+    xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_RES.xls'], write_date_res)    %写入指定结点的 残差波形
 end
 
