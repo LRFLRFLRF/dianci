@@ -27,3 +27,4 @@ y = waverec(c_new, l, 'db10');
 subplot(212);
 plot(y);
 ylim([0.1 0.5]);
+
