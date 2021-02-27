@@ -22,9 +22,9 @@ plt.rcParams['figure.figsize'] = 28, 18
 plt.rcParams['font.sans-serif'] = [u'SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-file_sigDEN = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\sigDEN.xls')  #读取小波分解
-file_sigRES = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\sigRES.xls')  #读取小波分解残差
-file_sig = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\sig.xls')  #读取原序列
+file_sigDEN = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\sigDEN.xls')  #读取小波分解
+file_sigRES = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\sigRES.xls')  #读取小波分解残差
+file_sig = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\sig.xls')  #读取原序列
 
 #######################SIGDEN##########################
 ##遍历excel建立datetime
