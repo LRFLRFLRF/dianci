@@ -217,7 +217,7 @@ def predict_RES_dynamic(res, df):
                                      marker='x',
                                      linewidth=1.0,
                                      label='dynamic forecast')
-    plt.title('RES动态预测')
+    plt.title('DEN动态预测')
     plt.show()
     return pred_dynamic.predicted_mean
 
@@ -313,6 +313,19 @@ def STL():
     mape_j = sum(np.abs((true_stl - pred_stl) / true_stl)) / len(true_stl) * 100
     print("STL模型总 MAPE_j ：", mape_j)
 
+def calculate_mod(true_j, pred_j, mod_name):
+    ##计算小波分解模型mape
+    mape_j = sum(np.abs((true_j-pred_j)/true_j))/len(true_j)*100
+    print(mod_name + " MAPE_j ：", mape_j)
+
+    ##计算MSE
+    mse_j = sum((pred_j - true_j)**2)/len(true_j)
+    print(mod_name + " MSE_j ：", mse_j)
+
+    ##计算MAE
+    mae_j = sum(np.abs(pred_j - true_j))/len(true_j)
+    print(mod_name + " MAE_j ：", mae_j)
+
 def main():
     ########################seasonal_decompose方法  mape 6.05%  短期预测很好 长期不行
     #sea_dec()
@@ -344,19 +357,6 @@ def main():
     #动态预测
     res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample)
 
-    """
-    ##残差白噪声检验
-    plt.figure(12)
-    plt.subplot(211)
-    plt.title('sigRES的残差图')
-    plt.plot(mod_RES.resid)
-    plt.subplot(212)
-    plt.title('sigRES的Ljung-Box检验图')
-    RES_ljung = acorr_ljungbox(mod_RES.resid, return_df=True)
-    plt.plot(RES_ljung['lb_pvalue'])
-    plt.show()
-    """
-
     ###############################DEN+RES############################
     ####单步预测####
     sum_pred = res_pred + den_pred
@@ -365,17 +365,8 @@ def main():
     true_j = sig_resample['1/8/2021':'1/13/2021']
     pred_j = sum_pred['1/8/2021':'1/13/2021']
 
-    ##计算小波分解模型mape
-    mape_j = sum(np.abs((true_j-pred_j)/true_j))/len(true_j)*100
-    print("小波分解重构模型 MAPE_j ：", mape_j)
-
-    ##计算MSE
-    mse_j = sum((pred_j - true_j)**2)/len(true_j)
-    print("小波分解重构模型 MSE_j ：", mse_j)
-
-    ##计算MAE
-    mae_j = sum(np.abs(pred_j - true_j))/len(true_j)
-    print("小波分解重构模型 MAE_j ：", mae_j)
+    # 计算模型 mape  mae  mse
+    calculate_mod(true_j, pred_j, '小波分解重构模型样本内预测')
 
     ####动态预测####
     sum_pred_dynamic = res_pred_dy + den_pred_dy
