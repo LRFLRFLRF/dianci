@@ -361,11 +361,21 @@ def main():
     ####单步预测####
     sum_pred = res_pred + den_pred
     plot_sum(sum_pred, sig_resample)
-    ##计算小波分解模型mape
+
     true_j = sig_resample['1/8/2021':'1/13/2021']
     pred_j = sum_pred['1/8/2021':'1/13/2021']
+
+    ##计算小波分解模型mape
     mape_j = sum(np.abs((true_j-pred_j)/true_j))/len(true_j)*100
-    print("模型总 MAPE_j ：", mape_j)
+    print("小波分解重构模型 MAPE_j ：", mape_j)
+
+    ##计算MSE
+    mse_j = sum((pred_j - true_j)**2)/len(true_j)
+    print("小波分解重构模型 MSE_j ：", mse_j)
+
+    ##计算MAE
+    mae_j = sum(np.abs(pred_j - true_j))/len(true_j)
+    print("小波分解重构模型 MAE_j ：", mae_j)
 
     ####动态预测####
     sum_pred_dynamic = res_pred_dy + den_pred_dy
