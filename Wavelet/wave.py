@@ -332,6 +332,23 @@ def main():
     #########################STLForecast方法  mape6.48%
     #STL()
 
+    #绘制原时间序列
+    plt.figure(figsize=(20, 7))
+    sig_resample.plot(color='black', linewidth=2.0)
+    plt.title('降采样后室内场强时间序列')
+    plt.show()
+
+
+    # 绘制小波分解后时间序列
+    plt.figure(figsize=(20, 7))
+    plt.subplot(211)
+    sigDEN_resample.plot(color='black', linewidth=2.0)
+    plt.title('4层小波分解近似信号')
+    plt.subplot(212)
+    sigRES_resample.plot(color='black', linewidth=2.0)
+    plt.title('4层小波分解后所剩残差信号')
+    plt.show()
+
     ##############################sigDEN#############################
     #ADF 单位根检验判断平稳性
     #TestStationaryAdfuller(sigDEN_resample)
