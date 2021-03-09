@@ -12,6 +12,12 @@ plt.style.use('fivethirtyeight')
 plt.rcParams['figure.figsize'] = 28, 18
 plt.rcParams['font.sans-serif'] = [u'SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['figure.facecolor'] = '#FFFFFF'
+plt.rcParams['lines.linewidth'] = 2.0
+plt.rcParams['figure.edgecolor'] = 'black'
+plt.rcParams['axes.grid'] = True
+plt.rcParams['grid.linewidth'] = 0.5
+plt.rcParams['grid.color'] = '#000000'
 
 file_path = 'E:\\Desktop\\dianci\\sample_data\\apartment\\result\\'
 file_list = ['20210106-20210110-rms', '20210110-20210112-rms', '20210112-20210114-rms', '20210114-20210116-rms']
@@ -31,8 +37,10 @@ df_rs = df_rs1['1/7/2020':'1/13/2020']
 
 def plot_data(dataframe):
     plt.figure(figsize=(20, 7))
-    plt.plot(dataframe, linewidth=1.0)
-    plt.title('原时间序列')
+    plt.subplot(111, facecolor='#FFFFFF')
+    dataframe.plot(color='black', linewidth=1.0)
+   # plt.plot(dataframe, linewidth=1.0, color='black')
+    plt.title('室内综合电场强度时间序列')
     plt.show()
 
 
@@ -71,8 +79,8 @@ def df_diff(dataframe, diff_num): #数列向后移动diff_num个位置做差分
     return diff_df.dropna(inplace=False)
 
 def SARIMA(df):
-    mod =  SARIMAX(df, order=(2, 0, 1),
-                   seasonal_order=(0, 1, 1, 48),
+    mod =  SARIMAX(df, order=(1, 0, 1),
+                   seasonal_order=(0, 1, 0, 48),
                    enforce_stationarity=False,
                    enforce_invertibility=False)
     results = mod.fit(maxiter=100)
@@ -99,9 +107,10 @@ def predict(res, df):
     pred = res.get_prediction(start=pd.to_datetime('2020-1-8'), dynamic=False)
     pred_ci = pred.conf_int()
     plt.figure(figsize=(20, 7))
-    df.plot(color='blue')
+    plt.subplot(111, facecolor='#FFFFFF')
+    df.plot(color='black', linewidth=2.0)
     pred.predicted_mean.plot(color='red', linewidth=1.0)
-    plt.title('静态预测')
+    plt.title('SARIMA方法BIC准则下静态预测')
     plt.show()
     return pred.predicted_mean
 
@@ -140,28 +149,28 @@ def TestStationaryAdfuller(df, cutoff = 0.01):
 def ACF_PACF(df):
     # 也可看一次差分后的ACF图观察随机性 ， 如果是纯随机的则只有o阶最大
     fig = plt.figure(figsize=(20, 7))
-    ax1 = fig.add_subplot(211)
-    fig = plot_acf(df.iloc[49:], lags=100, ax=ax1)
-    ax2 = fig.add_subplot(212)
-    fig = plot_pacf(df.iloc[49:], lags=100, ax=ax2)
+    ax1 = fig.add_subplot(211, facecolor='#FFFFFF')
+    fig = plot_acf(df.iloc[49:], lags=100, ax=ax1, title='自相关函数图')
+    ax2 = fig.add_subplot(212, facecolor='#FFFFFF')
+    fig = plot_pacf(df.iloc[49:], lags=100, ax=ax2, title='偏自相关函数图')
     plt.show()
 
 
 def main():
     #绘制原数据
-    plot_data(df_rs['1/7/2020':'1/13/2020'])
+    plot_data(df_yuan['1/7/2020':'1/13/2020'])
 
     #暴力求解aic 模型定阶
     #cal(df_rs)
 
     #差分
-    ddf = df_diff(df_rs, 1)  #后移48 做差分  24h*2
+    #ddf = df_diff(df_rs, 1)  #后移48 做差分  24h*2
 
     #ADF 单位根检验判断平稳性
     #TestStationaryAdfuller(df_yuan)
 
     #画出差分后的PACF ACF
-    #ACF_PACF(ddf)
+    ACF_PACF(df_rs)
 
     #训练sarima模型
     mod_res = SARIMA(df_rs)

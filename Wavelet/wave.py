@@ -21,6 +21,14 @@ plt.style.use('fivethirtyeight')
 plt.rcParams['figure.figsize'] = 28, 18
 plt.rcParams['font.sans-serif'] = [u'SimHei']
 plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['figure.facecolor'] = '#FFFFFF'
+plt.rcParams['lines.linewidth'] = 2.0
+plt.rcParams['figure.edgecolor'] = 'black'
+plt.rcParams['axes.grid'] = True
+plt.rcParams['grid.linewidth'] = 0.5
+plt.rcParams['grid.color'] = '#000000'
+print(plt.rcParamsDefault)
+
 
 file_sigDEN = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_0_rec_DEN.xls')  #读取小波分解
 file_sigRES = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_0_rec_RES.xls')  #读取小波分解残差
@@ -334,17 +342,19 @@ def main():
 
     #绘制原时间序列
     plt.figure(figsize=(20, 7))
+    plt.subplot(111, facecolor='#FFFFFF')
+    #plt.plot(sig_resample,color='black', linewidth=2.0)
     sig_resample.plot(color='black', linewidth=2.0)
-    plt.title('降采样后室内场强时间序列')
+    plt.title('降采样后室内电场强度')
     plt.show()
 
 
     # 绘制小波分解后时间序列
     plt.figure(figsize=(20, 7))
-    plt.subplot(211)
-    sigDEN_resample.plot(color='black', linewidth=2.0)
+    plt.subplot(211, facecolor='#FFFFFF')
+    sigDEN_resample.plot(color='black', linewidth=2.0,)
     plt.title('4层小波分解近似信号')
-    plt.subplot(212)
+    plt.subplot(212, facecolor='#FFFFFF')
     sigRES_resample.plot(color='black', linewidth=2.0)
     plt.title('4层小波分解后所剩残差信号')
     plt.show()
