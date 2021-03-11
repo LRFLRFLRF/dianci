@@ -125,6 +125,19 @@ def cal_res(dataframe):
     wf['bic'] = b
     print(wf[wf['bic'] == wf['bic'].min()])
 
+def TestStationaryAdfuller(df, cutoff = 0.01):
+    ts_test = adfuller(df, autolag='BIC')
+    ts_test_output = pd.Series(ts_test[0:4],
+                               index=['Test Statistic', 'p-value', '#Lags Used', 'Number of Observations Used'])
+    for key, value in ts_test[4].items():
+        ts_test_output['Critical Value (%s)' % key] = value
+    print(ts_test_output)
+
+    if ts_test[1] <= cutoff:
+        print(u"拒绝原假设，即数据没有单位根,序列是平稳的。")
+    else:
+        print(u"不能拒绝原假设，即数据存在单位根,数据是非平稳序列。")
+
 def SARIMA_DEN(df, order, seasonal_order):
     mod = SARIMAX(df, order=order,
                   seasonal_order=seasonal_order,
@@ -154,17 +167,20 @@ def ARIMA_RES(df, order):
 
     return results
 
+
 def predict_DEN(res, df):
     pred = res.get_prediction(start=pd.to_datetime('2021-1-8'), dynamic=False)
 
     #绘图
     plt.figure(figsize=(20, 7))
-    df.plot(color='blue', linewidth=2.0)
+    plt.subplot(111, facecolor='#FFFFFF')
+    df.plot(color='black', linewidth=2.0, label='原始数据')
     pred.predicted_mean.plot(color='red',
                              marker='x',
                              linewidth=1.0,
-                             label='One-step-ahead forecast')
-    plt.title('DEN单步预测')
+                             label='预测结果')
+    plt.title('近似部分SARIMA模型预测结果')
+    plt.legend(loc='upper left')
     plt.show()
     return pred.predicted_mean
 
@@ -176,35 +192,27 @@ def predict_RES(res, df):
 
     #绘图
     plt.figure(figsize=(20, 7))
-    df.plot(color='blue', linewidth=2.0)
+    plt.subplot(111, facecolor='#FFFFFF')
+    df.plot(color='black', linewidth=2.0, label='原始数据')
     pred.predicted_mean.plot(color='red',
                              marker='x',
                              linewidth=1.0,
-                             label='One-step-ahead forecast')
-    plt.title('RES单步预测')
+                             label='预测结果')
+    plt.title('残差部分ARIMA模型预测结果')
+    plt.legend(loc='upper left')
     #plt.fill_between(pred_ci.index, lower, upper, color='r', alpha=0.1)
     plt.show()
 
     return pred.predicted_mean
 
-def TestStationaryAdfuller(df, cutoff = 0.01):
-    ts_test = adfuller(df, autolag='BIC')
-    ts_test_output = pd.Series(ts_test[0:4],
-                               index=['Test Statistic', 'p-value', '#Lags Used', 'Number of Observations Used'])
-    for key, value in ts_test[4].items():
-        ts_test_output['Critical Value (%s)' % key] = value
-    print(ts_test_output)
-
-    if ts_test[1] <= cutoff:
-        print(u"拒绝原假设，即数据没有单位根,序列是平稳的。")
-    else:
-        print(u"不能拒绝原假设，即数据存在单位根,数据是非平稳序列。")
 
 def plot_sum(pred, sig):
     plt.figure(figsize=(20, 7))
-    sig.plot(color='blue', linewidth=2.0)
-    pred.plot(color='red', marker='x', linewidth=1.0, label='One-step-ahead forecast')
-    plt.title('小波分解重构序列 + 原序列单步预测')
+    plt.subplot(111, facecolor='#FFFFFF')
+    sig.plot(color='black', linewidth=2.0, label='原始数据')
+    pred.plot(color='red', marker='x', linewidth=1.0, label='预测结果')
+    plt.title('小波分解重构+SARIMA/ARIMA混合模型预测')
+    plt.legend(loc='upper left')
     plt.show()
 
 def plot_sum_dynamic(pred, sig):
@@ -367,7 +375,7 @@ def main():
 
     #训练sarima模型
     mod_DEN = SARIMA_DEN(sigDEN_resample,
-                         order=(2, 0, 1),
+                         order=(2, 0, 2),
                          seasonal_order=(0, 1, 0, 48))
     #静态预测
     den_pred = predict_DEN(mod_DEN, sigDEN_resample)

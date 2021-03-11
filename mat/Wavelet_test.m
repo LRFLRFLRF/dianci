@@ -2,7 +2,7 @@ load 106to114_oneDim.mat
 x = data_1;
 
 %信号分解
-[c, l] = wavedec(x, 5, 'db10');
+[c, l] = wavedec(x, 4, 'db10');
 
 %绘制原信号coef  并染色
 figure;

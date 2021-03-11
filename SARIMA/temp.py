@@ -79,8 +79,8 @@ def df_diff(dataframe, diff_num): #数列向后移动diff_num个位置做差分
     return diff_df.dropna(inplace=False)
 
 def SARIMA(df):
-    mod =  SARIMAX(df, order=(1, 0, 1),
-                   seasonal_order=(0, 1, 0, 48),
+    mod =  SARIMAX(df, order=(2, 0, 1),
+                   seasonal_order=(0, 1, 1, 48),
                    enforce_stationarity=False,
                    enforce_invertibility=False)
     results = mod.fit(maxiter=100)
@@ -108,9 +108,13 @@ def predict(res, df):
     pred_ci = pred.conf_int()
     plt.figure(figsize=(20, 7))
     plt.subplot(111, facecolor='#FFFFFF')
-    df.plot(color='black', linewidth=2.0)
-    pred.predicted_mean.plot(color='red', linewidth=1.0)
-    plt.title('SARIMA方法BIC准则下静态预测')
+    df.plot(color='black', linewidth=2.0, label='原始数据')
+    pred.predicted_mean.plot(color='red',
+                             linewidth=1.0,
+                             label='预测结果',
+                             marker='x')
+    plt.title('SARIMA方法AIC准则下静态预测')
+    plt.legend(loc='upper left')
     plt.show()
     return pred.predicted_mean
 

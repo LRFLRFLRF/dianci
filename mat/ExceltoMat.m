@@ -8,7 +8,6 @@ for file=filename
     data = [data; d];
 end
 
-
 data_1 = data(:,6);  %rms_val单列数据
 save('E:\Desktop\dianci\Python_code\mat\106to114.mat','data');
 save('E:\Desktop\dianci\Python_code\mat\106to114_oneDim.mat','data_1')

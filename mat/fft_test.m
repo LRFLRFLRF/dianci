@@ -24,17 +24,19 @@ Y = fft(data, n);
 %% 绘图
 % Y乘Y共轭=a方加b方   复数Y = a + ib
 Pyy = Y.*conj(Y)/n;
-%频率序列f  其中（0：n/x）的x控制plot显示频率范围      
+%频率序列f  其中（0：n/x）的x控制plot显示频率范围         Fs/n频谱分辨率
 f = Fs/n*(0:n/12);
 plot(f,Pyy(1:n/12+1))
 title('频谱强度')
-set(gca,'XTick',[0:1:20]);%设置要显示坐标刻度
+%set(gca,'XTick',[0:1:20]);%设置要显示坐标刻度
 xlabel('频率 (次/天)')
 
 %% IFFT反变换
 Y1 = Y';
-Y1(100:end) = 0;
+Y1(150:end) = 0;
 yifft = ifft(Y1');
 y_ifft = real(yifft);
-plot(y_ifft + mean(data_yuan))
+plot(y_ifft + mean(data_yuan));
+hold on;
+plot(data_yuan)
 
