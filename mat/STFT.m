@@ -31,10 +31,16 @@ nfft = window;
 %采样频率
 fs = 10*24; %一天折合成1s   采样频率 10*24
 [s, f, t] = spectrogram(data_yuan, window, noverlap, nfft, fs);
-figure;
+figure('color','w');
 imagesc(t, f./(fs/2), 10*log10((abs(s)/len)));   %功率谱密度 20*log10((abs(s)))
 xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
 colorbar;
 colormap(jet);
 ylabel(colorbar,'功率谱密度 [db/HZ]','FontSize',18);
 title('综合电场强度序列功率谱密度图','FontSize',18)
+yLabels = {'0-12点', '12-24点', '0-12点', '12-24点', '0-12点',...
+    '12-24点', '0-12点', '12-24点', '0-12点', '12-24点', '0-12点', '12-24点', '0-12点', '12-24点'};  % 待添加的标签
+for i = 1 : length(yLabels)
+    text(0.5 * i-0.5+0.125, 1-0.025, yLabels(i));   % 用文本的方式添加，位置可以自定义
+end
+
