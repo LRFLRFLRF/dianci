@@ -10,8 +10,10 @@ fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 data_yuan = getfield(dat, name);    %根据字段名读取数据
 
+data = data_yuan - mean(data_yuan);   %去除直流分量
+
 %% STFT
-len = length(data_yuan);
+len = length(data);
 
 %如果window为一个整数，x将被分成window长的段，每段使用Hamming窗函数加窗。
 window = 10*24/2;    %窗口数量   
@@ -30,14 +32,30 @@ nfft = window;
 
 %采样频率
 fs = 10*24; %一天折合成1s   采样频率 10*24
-[s, f, t] = spectrogram(data_yuan, window, noverlap, nfft, fs);
+
+
+[s, f, t] = spectrogram(data, window, noverlap, nfft, fs);
 figure('color','w');
-imagesc(t, f./(fs/2), 10*log10((abs(s)/len)));   %功率谱密度 20*log10((abs(s)))
+
+%% 功率谱密度 db/hz
+% imagesc(t, f./(fs/2), 10*log10(abs(s)/len));   %功率谱密度
+% title('综合电场强度序列功率谱密度图','FontSize',18);
+% xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
+% colorbar;
+% ylabel(colorbar,'功率谱密度 [dB/HZ]','FontSize',18);
+% colormap(jet);
+
+
+%% 按峰值做幅度归一化
+imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
+title('综合电场强度序列频谱图','FontSize',18);
 xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
 colorbar;
+ylabel(colorbar,'归一化幅度 [dB]','FontSize',18);
 colormap(jet);
-ylabel(colorbar,'功率谱密度 [db/HZ]','FontSize',18);
-title('综合电场强度序列功率谱密度图','FontSize',18)
+
+
+%% 显示[上下午]标签文字
 yLabels = {'0-12点', '12-24点', '0-12点', '12-24点', '0-12点',...
     '12-24点', '0-12点', '12-24点', '0-12点', '12-24点', '0-12点', '12-24点', '0-12点', '12-24点'};  % 待添加的标签
 for i = 1 : length(yLabels)
