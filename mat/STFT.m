@@ -17,16 +17,20 @@ window = 10*24/2;    %窗口数量
 %它必须为一个小于window或length(window)的整数。
 %其意思为两个相邻窗不是尾接着头的，而是两个窗有交集，有重叠的部分。
 % 重叠为0，window等于10*24时，正好时间轴7格，一格代表一天   若重叠率为0.5  则时间轴14格
-noverlap = window*0.5;    %每一段的重叠样本数,
+noverlap = window*0;    %每一段的重叠样本数,
 
 
-f_len = 15;     %频率轴分几份
-f = linspace(0, 1e3, f_len);   %第二参数为频率轴显示范围
+f_len = 10;     %频率轴分几份
+f = linspace(0, 1e10, f_len);   %第二参数为频率轴显示范围
+
+%离散傅里叶点数
+nfft = window;
 
 %采样频率
 fs = 10*24; %一天折合成1s   采样频率 10*24
-[s, f, t] = spectrogram(data_yuan, window, noverlap, f, fs);
+[s, f, t] = spectrogram(data_yuan, window, noverlap, nfft, fs);
 figure;
-imagesc(t, f, 20*log10((abs(s))));xlabel('Samples'); ylabel('Freqency');
+imagesc(t, f./fs, 20*log10((abs(s))));
+xlabel('天数'); ylabel('归一化频率');
 colorbar;
 
