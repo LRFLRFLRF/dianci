@@ -47,24 +47,24 @@ figure('color','w');
 
 
 %% 按全局峰值做幅度归一化
-% imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
-% %surf(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));
-% title('综合电场强度序列频谱图','FontSize',18);
-% xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
-% colorbar;
-% ylabel(colorbar,'归一化幅度 [dB]','FontSize',18);
-% colormap(jet);
-
-
-%% 按单日峰值做幅度归一化
-max_col = repmat(max(abs(s),[],1), size(s,1), 1);
-s_1 = abs(s)./max_col;
-imagesc(t, f./(fs/2), 10*log10(s_1) );   %频谱幅度归一化
+imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
+%surf(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));
 title('综合电场强度序列频谱图','FontSize',18);
 xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
 colorbar;
-ylabel(colorbar,'归一化幅度 [dB]','FontSize',18);
+ylabel(colorbar,'全局幅度最大值归一化幅度 [dB]','FontSize',18);
 colormap(jet);
+
+    
+%% 按单日峰值做幅度归一化
+% max_col = repmat(max(abs(s),[],1), size(s,1), 1);
+% s_1 = abs(s)./max_col;
+% imagesc(t, f./(fs/2), 10*log10(s_1) );   %频谱幅度归一化
+% title('综合电场强度序列频谱图','FontSize',18);
+% xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
+% colorbar;
+% ylabel(colorbar,'单日幅度最大值归一化幅度 [dB]','FontSize',18);
+% colormap(jet);
 
 %% 显示[上下午]标签文字
 yLabels = {'0-8点', '8-16点', '16-24点'};  % 待添加的标签
@@ -72,4 +72,23 @@ lenlab = length(yLabels);
 for i = 0 : length(yLabels)*7-1
     text(1/lenlab * i+0.05, 1-0.025, yLabels(mod(i,3)+1));   % 用文本的方式添加，位置可以自定义
 end
+
+
+%% 频率特征提取
+norm_freq_mat = repmat(f./(fs/2), 1, size(s, 2));%归一化频率矩阵
+
+%平均频率 MF
+MF = mean(abs(s), 1);
+
+%重心频率 FC
+numer = sum(norm_freq_mat.*abs(s));
+denomin = sum(abs(s));
+FC = numer./denomin;
+
+%均方频率MSF
+
+
+
+
+
 
