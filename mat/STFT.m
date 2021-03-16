@@ -47,13 +47,13 @@ figure('color','w');
 
 
 %% 按全局峰值做幅度归一化
-imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
-%surf(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));
-title('综合电场强度序列频谱图','FontSize',18);
-xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
-colorbar;
-ylabel(colorbar,'全局幅度最大值归一化幅度 [dB]','FontSize',18);
-colormap(jet);
+% imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
+% %surf(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));
+% title('综合电场强度序列频谱图','FontSize',18);
+% xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
+% colorbar;
+% ylabel(colorbar,'全局幅度最大值归一化幅度 [dB]','FontSize',18);
+% colormap(jet);
 
     
 %% 按单日峰值做幅度归一化
@@ -84,11 +84,18 @@ MF = mean(abs(s), 1);
 numer = sum(norm_freq_mat.*abs(s));
 denomin = sum(abs(s));
 FC = numer./denomin;
+FC_mat = repmat(FC, size(s, 1), 1);%重心频率扩展矩阵
 
 %均方频率MSF
+numer = sum((norm_freq_mat.^2).*abs(s));
+denomin = sum(abs(s));
+MSF = numer./denomin;
 
+%频率方差 VF
+numer = sum(((norm_freq_mat - FC_mat).^2).*abs(s));
+denomin = sum(abs(s));
+VF = numer./denomin;
 
-
-
-
-
+% 合并结果
+result = [MF; FC; MSF; VF];
+imagesc(result)
