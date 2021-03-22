@@ -30,8 +30,8 @@ plt.rcParams['grid.color'] = '#000000'
 print(plt.rcParamsDefault)
 
 
-file_sigDEN = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_db8_rec_DEN.xls')  #读取小波分解
-file_sigRES = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_db8_rec_RES.xls')  #读取小波分解残差
+file_sigDEN = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_5_db7_rec_DEN.xls')  #读取小波分解
+file_sigRES = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_5_db7_rec_RES.xls')  #读取小波分解残差
 file_sig = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\sig.xls')  #读取原序列
 
 #######################SIGDEN##########################
