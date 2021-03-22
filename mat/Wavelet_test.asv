@@ -42,7 +42,7 @@ for i=1:(length(l)-1)
     x_cursor = l(i) + x_cursor - 1;
 end
 xlim([1 2015]);
-% »æÖÆ½üËÆ²¨ÐÎ
+%
 subplot(212);
 plot(y);
 ylim([0.1 0.5]);

@@ -48,24 +48,24 @@ figure('color','w');
 
 
 %% 按全局峰值做幅度归一化
-imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
-%surf(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));
-title('综合电场强度序列频谱图','FontSize',18);
-xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
-colorbar;
-ylabel(colorbar,'全局幅度最大值归一化幅度 [dB]','FontSize',18);
-colormap(jet);
-
-    
-%% 按单日峰值做幅度归一化
-% max_col = repmat(max(abs(s),[],1), size(s,1), 1);
-% s_1 = abs(s)./max_col;
-% imagesc(t, f./(fs/2), 10*log10(s_1) );   %频谱幅度归一化
+% imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
+% %surf(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));
 % title('综合电场强度序列频谱图','FontSize',18);
 % xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
 % colorbar;
-% ylabel(colorbar,'单日幅度最大值归一化幅度 [dB]','FontSize',18);
+% ylabel(colorbar,'归一化频谱幅度 [dB]','FontSize',18);
 % colormap(jet);
+
+    
+%% 按单日峰值做幅度归一化
+max_col = repmat(max(abs(s),[],1), size(s,1), 1);
+s_1 = abs(s)./max_col;
+imagesc(t, f./(fs/2), 10*log10(s_1) );   %频谱幅度归一化
+title('综合电场强度序列频谱图','FontSize',18);
+xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
+colorbar;
+ylabel(colorbar,'归一化频谱幅度 [dB]','FontSize',18);
+colormap(jet);
 
 %% 显示[上下午]标签文字
 yLabels = {'0-8点', '8-16点', '16-24点'};  % 待添加的标签
@@ -114,42 +114,45 @@ save('E:\Desktop\dianci\Python_code\mat\freq_feat.mat','result')
 % 坐标轴下方显示 FC指标
 text(-0.3, 1+0.05, 'FC:');  %显示指标名称
 reshape_mat = reshape(FC, 3, 7);  %方便求每天FC最大值
-[max1, loc] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
+[max1, loc_max] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
+[min1, loc_min] = min(reshape_mat,[],1);   %min  最小值  loc最小值位置
 for i = 1 : size(FC, 2)
-    if mod(i-1, 3)+1 == loc(floor((i-1)/3)+1)
+    if mod(i-1, 3)+1 == loc_max(floor((i-1)/3)+1)
         % 每天的最大值时间段高亮显示
-        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [1 0 0], 'edgecolor', 'r'); 
+        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [255,64,0]./255 , 'edgecolor', 'white'); 
+    elseif mod(i-1, 3)+1 == loc_min(floor((i-1)/3)+1)
+        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [0,191,255]./255, 'edgecolor', 'white');     
     else
-        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'));   % 用文本的方式添加
+        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [154,254,46]./255, 'edgecolor', 'white');   % 用文本的方式添加
     end
 end
 
-% 坐标轴下方显示 MF指标
-text(-0.3, 1+0.05*2, 'MF:');  %显示指标名称
-reshape_mat = reshape(MF, 3, 7);  %方便求每天MF最大值
-[max1, loc] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
-for i = 1 : size(MF, 2)
-    if mod(i-1, 3)+1 == loc(floor((i-1)/3)+1)
-        % 每天的最大值时间段高亮显示
-        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MF(1, i),'%.3f'),'backgroundcolor', [1 0 0], 'edgecolor', 'r'); 
-    else
-        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MF(1, i),'%.3f'));   % 用文本的方式添加
-    end
-end
-
-
-% 坐标轴下方显示 VF指标
-text(-0.3, 1+0.05*3, 'VF:');  %显示指标名称
-reshape_mat = reshape(VF, 3, 7);  %方便求每天VF最大值
-[max1, loc] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
-for i = 1 : size(VF, 2)
-    if mod(i-1, 3)+1 == loc(floor((i-1)/3)+1)
-        % 每天的最大值时间段高亮显示
-        text(1/lenlab * (i-1)+0.045, 1+0.05*3, num2str(VF(1, i),'%.3f'),'backgroundcolor', [1 0 0], 'edgecolor', 'r'); 
-    else
-        text(1/lenlab * (i-1)+0.045, 1+0.05*3, num2str(VF(1, i),'%.3f'));   % 用文本的方式添加
-    end
-end
+% % 坐标轴下方显示 MSF指标
+% text(-0.3, 1+0.05*2, 'MSF:');  %显示指标名称
+% reshape_mat = reshape(MSF, 3, 7);  %方便求每天MF最大值
+% [max1, loc] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
+% for i = 1 : size(MSF, 2)
+%     if mod(i-1, 3)+1 == loc(floor((i-1)/3)+1)
+%         % 每天的最大值时间段高亮显示
+%         text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MSF(1, i),'%.3f'),'backgroundcolor', [1 0 0], 'edgecolor', 'r'); 
+%     else
+%         text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MSF(1, i),'%.3f'));   % 用文本的方式添加
+%     end
+% end
+% 
+% 
+% % 坐标轴下方显示 MF指标
+% text(-0.3, 1+0.05*3, 'MF:');  %显示指标名称
+% reshape_mat = reshape(MF, 3, 7);  %方便求每天MF最大值
+% [max1, loc] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
+% for i = 1 : size(MF, 2)
+%     if mod(i-1, 3)+1 == loc(floor((i-1)/3)+1)
+%         % 每天的最大值时间段高亮显示
+%         text(1/lenlab * (i-1)+0.045, 1+0.05*3, num2str(MF(1, i),'%.3f'),'backgroundcolor', [1 0 0], 'edgecolor', 'r'); 
+%     else
+%         text(1/lenlab * (i-1)+0.045, 1+0.05*3, num2str(MF(1, i),'%.3f'));   % 用文本的方式添加
+%     end
+% end
 
 
 
