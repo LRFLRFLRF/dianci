@@ -48,3 +48,6 @@ plot(y);
 ylim([0.1 0.5]);
 
 
+%±£´æ
+data = y';
+save('E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_db8_rec.mat','data');

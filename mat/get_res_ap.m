@@ -5,7 +5,7 @@ function get_res_ap()
     yuan_data_path = 'E:\Desktop\dianci\Python_code\mat\';  %106to114_oneDim 文件路径
     node_data_path = 'E:\Desktop\dianci\Python_code\mat\mat_xls_file\';    %node文件路径
     yuan_data_name = '106to114';
-    node_data_name = 'wp_4_0_rec';      %得到变量名字符串
+    node_data_name = 'wp_4_db8_rec';      %得到变量名字符串
     
     
     %加载原始波形
