@@ -2,14 +2,14 @@ clc;
 clear;
 
 yuan_data_path = 'E:\Desktop\dianci\Python_code\mat\';  %106to114_oneDim 文件路径
-yuan_data_name = '106to114_oneDim';
+yuan_data_name = '107to113_oneDim';
 
 %% 加载原始波形
 dat = load([yuan_data_path, yuan_data_name, '.mat']);   
 fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 data_yuan = getfield(dat, name);    %根据字段名读取数据
-
+%data_yuan = data_yuan(1:length(data_yuan)*5/7);   %前五天的
 
 
 %% fft变换
@@ -26,25 +26,39 @@ Y = fft(data, n);
 Pyy = Y.*conj(Y)/n;
 %频率序列f  其中（0：n/x）的x控制plot显示频率范围         Fs/n频谱分辨率
 f = Fs/n*(0:n/12);
-plot(f,Pyy(1:n/12+1))
-title('频谱强度')
-%set(gca,'XTick',[0:1:20]);%设置要显示坐标刻度
-xlabel('频率 (次/天)')
+figure('color','w');
+plot(f,Pyy(1:n/12+1) , 'color', 'black', 'LineWidth', 1.5)
+title('频谱强度','FontSize',18)
+set(gca,'XTick',[0:1:30]);%设置要显示坐标刻度
+xlabel('频率 [1/24h]','FontSize',18);
+
 
 %% IFFT反变换
-Y1 = Y';
-Y1(150:end) = 0;
-yifft = ifft(Y1');
-y_ifft = real(yifft);
-y_ifft = y_ifft + mean(data_yuan);
-plot(y_ifft);
-hold on;
-plot(data_yuan)
+R2 = [];
+for i= 1:length(data_yuan)/8
+    %反变换
+    Y1 = Y';
+    Y1(8*i:end) = 0;
+    yifft = ifft(Y1');
+    y_ifft = real(yifft);
+    y_ifft = y_ifft + mean(data_yuan);
+    
+    %计算解释方差
+    SS_res = sum((data_yuan-y_ifft).^2);  %残差平方和
+    SS_tot = sum((data_yuan - mean(data_yuan)).^2);  %总平方和
+    R2 = [R2;i'' 1-(SS_res/SS_tot)];
+    
+end
 
-%% 计算解释方差
-SS_res = sum((data_yuan-y_ifft).^2);  %残差平方和
-SS_tot = sum((data_yuan - mean(data_yuan)).^2);  %总平方和
-RMSE = sqrt(  );
+% %绘图
+% figure('color','w');
+% plot(y_ifft);
+% hold on;
+% plot(data_yuan)
+
+
+
+
 
 
 
