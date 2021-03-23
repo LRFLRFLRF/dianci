@@ -33,7 +33,7 @@ xlabel('频率 (次/天)')
 
 %% IFFT反变换
 Y1 = Y';
-Y1(900:end) = 0;
+Y1(150:end) = 0;
 yifft = ifft(Y1');
 y_ifft = real(yifft);
 y_ifft = y_ifft + mean(data_yuan);
@@ -44,7 +44,7 @@ plot(data_yuan)
 %% 计算解释方差
 SS_res = sum((data_yuan-y_ifft).^2);  %残差平方和
 SS_tot = sum((data_yuan - mean(data_yuan)).^2);  %总平方和
-R2 = 1 - (SS_res/SS_tot);
+RMSE = sqrt(  );
 
 
 
