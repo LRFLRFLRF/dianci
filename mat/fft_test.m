@@ -11,6 +11,21 @@ name = fieldname{1};
 data_yuan = getfield(dat, name);    %根据字段名读取数据
 %data_yuan = data_yuan(1:length(data_yuan)*5/7);   %前五天的
 
+%% 自相关函数图
+numLags = 100*5;
+figure('color','w');
+title('自相关函数','FontSize',18);
+[acf, lags, bounds] = autocorr(data_yuan, numLags);
+lineHandles = stem(lags,acf,'filled','black');
+set(lineHandles(1),'MarkerSize',4)
+grid('on')
+xlabel('滞后','FontSize',18)
+ylabel('样本自相关','FontSize',18)
+title('样本自相关函数','FontSize',18)
+hold('on');
+plot([0+0.5 0+0.5; numLags numLags],[bounds([1 1]) bounds([2 2])],'-b');
+plot([0 numLags],[0 0],'-k');
+
 
 %% fft变换
 Fs = 48*5;            % 采样频率   单位：次/天    6min一个点那一天24h 就是每天48*5的采样频率                 
