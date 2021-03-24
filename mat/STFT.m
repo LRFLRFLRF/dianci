@@ -83,6 +83,13 @@ set(gca, 'GridAlpha', 1);  % 设置透明度
 %% 频率特征提取
 norm_freq_mat = repmat(f./(fs/2), 1, size(s, 2));%归一化频率矩阵
 
+%平均电场强度 MS
+MS = [];
+size(s, 2)
+for i=1:size(s, 2)
+    MS = [MS mean( data_yuan((i-1)*fs/3+1:i*fs/3) )];
+end
+
 %平均频率 MF
 MF = mean(abs(s), 1);
 
@@ -127,32 +134,21 @@ for i = 1 : size(FC, 2)
     end
 end
 
-% % 坐标轴下方显示 MSF指标
-% text(-0.3, 1+0.05*2, 'MSF:');  %显示指标名称
-% reshape_mat = reshape(MSF, 3, 7);  %方便求每天MF最大值
-% [max1, loc] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
-% for i = 1 : size(MSF, 2)
-%     if mod(i-1, 3)+1 == loc(floor((i-1)/3)+1)
-%         % 每天的最大值时间段高亮显示
-%         text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MSF(1, i),'%.3f'),'backgroundcolor', [1 0 0], 'edgecolor', 'r'); 
-%     else
-%         text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MSF(1, i),'%.3f'));   % 用文本的方式添加
-%     end
-% end
-% 
-% 
-% % 坐标轴下方显示 MF指标
-% text(-0.3, 1+0.05*3, 'MF:');  %显示指标名称
-% reshape_mat = reshape(MF, 3, 7);  %方便求每天MF最大值
-% [max1, loc] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
-% for i = 1 : size(MF, 2)
-%     if mod(i-1, 3)+1 == loc(floor((i-1)/3)+1)
-%         % 每天的最大值时间段高亮显示
-%         text(1/lenlab * (i-1)+0.045, 1+0.05*3, num2str(MF(1, i),'%.3f'),'backgroundcolor', [1 0 0], 'edgecolor', 'r'); 
-%     else
-%         text(1/lenlab * (i-1)+0.045, 1+0.05*3, num2str(MF(1, i),'%.3f'));   % 用文本的方式添加
-%     end
-% end
 
+% 坐标轴下方显示 MS指标
+text(-0.3, 1+0.05*2, 'MS:');  %显示指标名称
+reshape_mat = reshape(MS, 3, 7);  %方便求每天MS最大值
+[max1, loc_max] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
+[min1, loc_min] = min(reshape_mat,[],1);   %min  最小值  loc最小值位置
+for i = 1 : size(MS, 2)
+    if mod(i-1, 3)+1 == loc_max(floor((i-1)/3)+1)
+        % 每天的最大值时间段高亮显示
+        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MS(1, i),'%.3f'),'backgroundcolor', [255,64,0]./255 , 'edgecolor', 'white'); 
+    elseif mod(i-1, 3)+1 == loc_min(floor((i-1)/3)+1)
+        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MS(1, i),'%.3f'),'backgroundcolor', [0,191,255]./255, 'edgecolor', 'white');     
+    else
+        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MS(1, i),'%.3f'),'backgroundcolor', [154,254,46]./255, 'edgecolor', 'white');   % 用文本的方式添加
+    end
+end
 
 
