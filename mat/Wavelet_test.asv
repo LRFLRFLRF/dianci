@@ -42,7 +42,7 @@ a = waverec(c_new, l, ['db', num2str(y_max)]);
 %细节信号D重构
 coef = [];    %近似信号a   和细节信号d  的coef矩阵
 x_cursor = 0;
-for i=1:(length(l)-1)
+for i=1:(length(l))
     c_new = c;
     c_new(1 : x_cursor) = 0;
     l(i) + x_cursor + 1
@@ -89,14 +89,11 @@ for i =1 :size(coef,2)
     Pyy = Y.*conj(Y)/n;
     %频率序列f  其中（0：n/x）的x控制plot显示频率范围         Fs/n频谱分辨率
     f = Fs/n*(0:n/2);
-    subplot(str2num([num2str(size(coef,2)) '1', num2str(i)]));
+    subplot(str2num([num2str(size(D,2)) '1', num2str(i)]));
+    if i = 
     plot(f,Pyy(1:n/2+1) , 'color', 'black', 'LineWidth', 1.5)
     set(gca,'XTick',[0:10:150]);%设置要显示坐标刻度
-    if i == 1
-        title(['近似信号A' num2str(size(coef,2) -1) '频谱强度'],'FontSize',18)
-    else
-        title(['细节信号D' num2str(size(coef,2) - i +1) '频谱强度'],'FontSize',18)
-    end
+    title(['细节信号D' num2str(size(D,2) - i +1) '频谱强度'],'FontSize',18)
     hold on;
 end
 xlabel('频率 [1/24h]','FontSize',18);
