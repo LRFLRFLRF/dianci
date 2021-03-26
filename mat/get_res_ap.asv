@@ -29,14 +29,7 @@ function get_res_ap()
     write_date_res = [data_yuan(:,1:5) res];
     xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_RES.xls'], write_date_res)    %写入指定结点的 残差波形
 
-%% 绘图
-figure('color','w');
-plot(data_yuan(:,6) , 'color', 'black', 'LineWidth', 1.0);
-hold on;
-plot(data_node , 'color', 'red', 'LineWidth', 1.5);
-title('原始电场强度信号与近似信号','FontSize',18);
-ylabel('电场强度[v/m]','FontSize',18)
-h = legend('原始电场强度','近似电场强度','Location', 'northwest');
-set(h, 'FontSize', 15);
+%% 
+
 end
 

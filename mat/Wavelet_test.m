@@ -19,7 +19,7 @@ for j = 1:cengshu
         %计算信噪比
         M = mean(y);   %平均值
         SD = std(y, 1);
-        SNR = [SNR 10*log10(M/SD)];
+        SNR = [SNR 20*log10(M/SD)];
     end
 end
 SNR = reshape(SNR, jieshu, cengshu)';
@@ -30,7 +30,7 @@ disp(['阶数：', num2str(y_max)])
 
 %% 根据最大信噪比选择db波阶数
 %信号分解
-y_max = 10;
+y_max = 8;
 x_max = 4;
 [c, l] = wavedec(x, x_max, ['db', num2str(y_max)]);
 
@@ -45,7 +45,6 @@ x_cursor = 0;
 for i=1:(length(l)-1)
     c_new = c;
     c_new(1 : x_cursor) = 0;
-    l(i) + x_cursor + 1
     c_new((l(i) + x_cursor + 1) : end) = 0;
     coef = [coef  waverec(c_new, l, ['db', num2str(y_max)])];
     x_cursor = l(i) + x_cursor;
@@ -71,8 +70,8 @@ plot(a);
 ylim([0.1 0.5]);
 
 %% 保存
-% data = y';
-% save('E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_db10_rec.mat','data');
+data = y';
+save('E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_db8_rec.mat','data');
 
 
 %% 细节信号D的fft频谱检验
@@ -91,7 +90,7 @@ for i =1 :size(coef,2)
     f = Fs/n*(0:n/2);
     subplot(str2num([num2str(size(coef,2)) '1', num2str(i)]));
     plot(f,Pyy(1:n/2+1) , 'color', 'black', 'LineWidth', 1.5)
-    set(gca,'XTick',[0:10:150]);%设置要显示坐标刻度
+    set(gca,'XTick',[0:5:150]);%设置要显示坐标刻度
     if i == 1
         title(['近似信号A' num2str(size(coef,2) -1) '频谱强度'],'FontSize',18)
     else
