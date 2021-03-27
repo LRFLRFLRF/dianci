@@ -30,8 +30,8 @@ plt.rcParams['grid.color'] = '#000000'
 print(plt.rcParamsDefault)
 
 
-file_sigDEN = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_5_db7_rec_DEN.xls')  #读取小波分解
-file_sigRES = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_5_db7_rec_RES.xls')  #读取小波分解残差
+file_sigDEN = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_db8_rec_DEN.xls')  #读取小波分解
+file_sigRES = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\wp_4_db8_rec_RES.xls')  #读取小波分解残差
 file_sig = pd.read_excel(r'E:\Desktop\dianci\Python_code\mat\mat_xls_file\sig.xls')  #读取原序列
 
 #######################SIGDEN##########################
@@ -47,7 +47,7 @@ sigDEN_table['datetime'] = pd.to_datetime(sigDEN_table['datetime'])
 sigDEN_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sigDEN = sigDEN_table['sigDEN']['2021-1-7':'2021-1-13']
-sigDEN_resample = sigDEN_table['sigDEN']['2021-1-7':'2021-1-13'].resample('30T').mean()  # 三十分钟重采样
+sigDEN_resample = sigDEN_table['sigDEN']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
 
 
 #######################SIGRES##########################
@@ -62,7 +62,7 @@ sigRES_table['datetime'] = pd.to_datetime(sigRES_table['datetime'])
 sigRES_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sigRES = sigRES_table['sigRES']['2021-1-7':'2021-1-13']
-sigRES_resample = sigRES_table['sigRES']['2021-1-7':'2021-1-13'].resample('30T').mean()  # 三十分钟重采样
+sigRES_resample = sigRES_table['sigRES']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
 
 #######################SIG原序列##########################
 ##遍历excel建立datetime
@@ -76,13 +76,13 @@ sig_table['datetime'] = pd.to_datetime(sig_table['datetime'])
 sig_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sig = sig_table['sig']['2021-1-7':'2021-1-13']
-sig_resample = sig_table['sig']['2021-1-7':'2021-1-13'].resample('30T').mean()  # 三十分钟重采样
+sig_resample = sig_table['sig']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
 
 def cal(dataframe):
     # 暴力算bic
     p = q = range(0, 3)
     pdq = list(itertools.product(p, q))
-    pdq_x_PDQs = [(x[0], 1, x[1], 48) for x in list(itertools.product(p, q))]
+    pdq_x_PDQs = [(x[0], 1, x[1], 48*2.5) for x in list(itertools.product(p, q))]
     a = []
     b = []
     c = []
@@ -144,6 +144,7 @@ def SARIMA_DEN(df, order, seasonal_order):
                   enforce_stationarity=False,
                   enforce_invertibility=False)
     results = mod.fit(maxiter=100)
+    print('BIC:{}'.format(results.bic))
     print("模型中实际估计的自回归参数 :", results.arparams)
     print("模型中实际估算的移动平均参数 :", results.maparams)
 #    print("模型中实际估算的季节性自回归参数 :", results.seasonalarparams)
@@ -371,7 +372,7 @@ def main():
     #ADF 单位根检验判断平稳性
     #TestStationaryAdfuller(sigDEN_resample)
     ##bic暴力算阶
-    #cal(sigDEN_resample)
+    #cal(sigDEN_resample['2021-1-7':'2021-1-10'])
 
     #训练sarima模型
     mod_DEN = SARIMA_DEN(sigDEN_resample,
@@ -379,6 +380,10 @@ def main():
                          seasonal_order=(0, 1, 0, 48))
     #静态预测
     den_pred = predict_DEN(mod_DEN, sigDEN_resample)
+    #计算精度
+    true_j = sigDEN_resample['1/8/2021':'1/13/2021']
+    pred_j = den_pred['1/8/2021':'1/13/2021']
+    calculate_mod(true_j, pred_j, '近似信号模型样本内预测')
     #动态预测
     den_pred_dy = predict_RES_dynamic(mod_DEN, sigDEN_resample)
 
