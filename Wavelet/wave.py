@@ -171,22 +171,6 @@ def ARIMA_RES(df, order):
     return results
 
 
-def predict_DEN(res, df):
-    pred = res.get_prediction(start=pd.to_datetime('2021-1-8'), dynamic=False)
-
-    #绘图
-    plt.figure(figsize=(20, 7))
-    plt.subplot(111, facecolor='#FFFFFF')
-    df.plot(color='black', linewidth=2.0, label='原始数据')
-    pred.predicted_mean.plot(color='red',
-                             marker='x',
-                             linewidth=1.0,
-                             label='预测结果')
-    plt.title('近似部分SARIMA模型预测结果')
-    plt.legend(loc='upper left')
-    plt.show()
-    return pred.predicted_mean
-
 def predict_RES(res, df):
     pred = res.get_prediction(start=pd.to_datetime('2021-1-8'), dynamic=False)
     pred_ci = pred.conf_int()    #置信区间
@@ -282,7 +266,7 @@ def sea_dec():
                          order=(2, 0, 1),
                          seasonal_order=(0, 1, 0, 48))
     #静态预测
-    sea_pred = predict_DEN(mod_SEA, DecomposeResult.seasonal)
+    #sea_pred = predict_DEN(mod_SEA, DecomposeResult.seasonal)
     #动态预测
     #sea_pred_dy = predict_RES_dynamic(mod_SEA, DecomposeResult.seasonal)
 
@@ -343,6 +327,9 @@ def STL():
     print("STL模型总 MAPE_j ：", mape_j)
 
 def calculate_mod(true_j, pred_j, mod_name):
+    if len(true_j) != len(pred_j):
+        true_j = true_j[0:len(pred_j)]
+
     ##计算小波分解模型mape
     mape_j = sum(np.abs((true_j-pred_j)/true_j))/len(true_j)*100
     print(mod_name + " MAPE_j ：", mape_j)
@@ -389,15 +376,16 @@ def main():
     #训练sarima模型
     mod_DEN = SARIMA_DEN(sigDEN_resample,
                          order=(2, 0, 2),
-                         seasonal_order=(0, 1, 0, 48))
-    #静态预测
-    den_pred = predict_DEN(mod_DEN, sigDEN_resample)
+                         seasonal_order=(0, 1, 0, 48*2.5))
+
+    #动态预测
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=1)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigDEN_resample['1/8/2021':'1/13/2021']
-    pred_j = den_pred['1/8/2021':'1/13/2021']
+    pred_j = den_pred_dy['1/8/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '近似信号模型样本内预测')
-    #动态预测
-    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, 12, 1)
+
+
 
     ##############################sigRES#############################
     ##bic暴力算阶
@@ -411,7 +399,7 @@ def main():
 
     ###############################DEN+RES############################
     ####单步预测####
-    sum_pred = res_pred + den_pred
+    sum_pred = res_pred + den_pred_dy
     plot_sum(sum_pred, sig_resample)
 
     true_j = sig_resample['1/8/2021':'1/13/2021']
