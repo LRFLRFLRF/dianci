@@ -3,7 +3,9 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import pandas as pd
-from datetime import datetime
+import datetime
+#from datetime import datetime
+
 from scipy import interpolate
 from pandas import DataFrame,Series
 import statsmodels.api as sm
@@ -40,7 +42,7 @@ sigDEN_indexname = {'sigDEN': [], 'datetime': []}
 sigDEN_table = pd.DataFrame(sigDEN_indexname)
 for row in range(file_sigDEN.shape[0]):
     # 创建datetime
-    datetime_new = datetime(2021, file_sigDEN.iat[row, 1], file_sigDEN.iat[row, 2], file_sigDEN.iat[row, 3], file_sigDEN.iat[row, 4])
+    datetime_new = datetime.datetime(2021, file_sigDEN.iat[row, 1], file_sigDEN.iat[row, 2], file_sigDEN.iat[row, 3], file_sigDEN.iat[row, 4])
     sigDEN_table.loc[row, :] = [file_sigDEN.iat[row, 5], datetime_new]
 
 sigDEN_table['datetime'] = pd.to_datetime(sigDEN_table['datetime'])
@@ -56,7 +58,7 @@ sigRES_indexname = {'sigRES': [], 'datetime': []}
 sigRES_table = pd.DataFrame(sigRES_indexname)
 for row in range(file_sigRES.shape[0]):
     # 创建datetime
-    datetime_new = datetime(2021, file_sigRES.iat[row, 1], file_sigRES.iat[row, 2], file_sigRES.iat[row, 3], file_sigRES.iat[row, 4])
+    datetime_new = datetime.datetime(2021, file_sigRES.iat[row, 1], file_sigRES.iat[row, 2], file_sigRES.iat[row, 3], file_sigRES.iat[row, 4])
     sigRES_table.loc[row, :] = [file_sigRES.iat[row, 5], datetime_new]
 sigRES_table['datetime'] = pd.to_datetime(sigRES_table['datetime'])
 sigRES_table.set_index('datetime', inplace=True)
@@ -70,7 +72,7 @@ sig_indexname = {'sig': [], 'datetime': []}
 sig_table = pd.DataFrame(sig_indexname)
 for row in range(file_sig.shape[0]):
     # 创建datetime
-    datetime_new = datetime(2021, file_sig.iat[row, 1], file_sig.iat[row, 2], file_sig.iat[row, 3], file_sig.iat[row, 4])
+    datetime_new = datetime.datetime(2021, file_sig.iat[row, 1], file_sig.iat[row, 2], file_sig.iat[row, 3], file_sig.iat[row, 4])
     sig_table.loc[row, :] = [file_sig.iat[row, 5], datetime_new]
 sig_table['datetime'] = pd.to_datetime(sig_table['datetime'])
 sig_table.set_index('datetime', inplace=True)
@@ -238,20 +240,30 @@ def predict_RES_dynamic(res, df):
     plt.show()
     return pred_dynamic.predicted_mean
 
-def predict_DEN_dynamic(res, df):
-    pred_dynamic = res.get_prediction(start=pd.to_datetime('2021-1-11'),
-                                      end=pd.to_datetime('2021-1-12'),
-                                      dynamic=True,
-                                      full_results=True)
+def predict_DEN_dynamic(res, df_yuan, delt_t, step):  #delt_t 采样时间间隔   step 预测步数
+    time_delt = datetime.timedelta(minutes=delt_t*(step-1))    #预测时长
+    starttime = pd.to_datetime('2021-1-8')
+    df = pd.Series()   #新建空表放预测值
+    while(starttime.__lt__( df_yuan.index[-1] - time_delt )):
+        endtime = starttime + time_delt
+        pred_dynamic = res.get_prediction(start=starttime,
+                                          end=endtime,
+                                          dynamic=True,
+                                          full_results=True)
+        starttime = endtime + datetime.timedelta(minutes=delt_t)
+        df = pd.concat([df, pred_dynamic.predicted_mean])
+
     plt.figure(figsize=(20, 7))
-    df.plot(color='blue', linewidth=2.0)
-    pred_dynamic.predicted_mean.plot(color='red',
-                                     marker='x',
-                                     linewidth=1.0,
-                                     label='dynamic forecast')
-    plt.title('DEN动态预测')
+    plt.subplot(111, facecolor='#FFFFFF')
+    df_yuan.plot(color='black', linewidth=2.0, label='原始数据')
+    df.plot(color='red',
+            marker='x',
+            linewidth=1.0,
+            label='预测结果')
+    plt.title('近似信号多步预测-预测步数' + str(step))
+    plt.legend(loc='upper left')
     plt.show()
-    return pred_dynamic.predicted_mean
+    return df
 
 def sea_dec():
 
@@ -385,7 +397,7 @@ def main():
     pred_j = den_pred['1/8/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '近似信号模型样本内预测')
     #动态预测
-    den_pred_dy = predict_RES_dynamic(mod_DEN, sigDEN_resample)
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, 12, 1)
 
     ##############################sigRES#############################
     ##bic暴力算阶
@@ -409,8 +421,8 @@ def main():
     calculate_mod(true_j, pred_j, '小波分解重构模型样本内预测')
 
     ####动态预测####
-    sum_pred_dynamic = res_pred_dy + den_pred_dy
-    plot_sum_dynamic(sum_pred_dynamic, sig_resample)
+    #sum_pred_dynamic = res_pred_dy + den_pred_dy
+    #plot_sum_dynamic(sum_pred_dynamic, sig_resample)
 
 if __name__ == '__main__':
     main()
