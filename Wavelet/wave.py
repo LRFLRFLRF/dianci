@@ -4,6 +4,7 @@ import math
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 #from datetime import datetime
 
 from scipy import interpolate
@@ -17,7 +18,7 @@ from statsmodels.tsa.forecasting.stl import STLForecast
 import itertools
 from statsmodels.tsa.stattools import adfuller, acf
 from statsmodels.stats.diagnostic import acorr_ljungbox
-
+from statsmodels.stats.diagnostic import acorr_ljungbox as lb_test
 
 plt.style.use('fivethirtyeight')
 plt.rcParams['figure.figsize'] = 28, 18
@@ -155,6 +156,9 @@ def SARIMA_DEN(df, order, seasonal_order):
     print("模型 MAE :", results.mae)
     print(results.summary())
 
+##LBj检验残差是否为白噪声
+    ljung_data = lb_test(results.resid['1/8/2021':], return_df=True)
+    print(ljung_data)
     return results
 
 def ARIMA_RES(df, order):
@@ -168,30 +172,20 @@ def ARIMA_RES(df, order):
     print("模型 MAE :", results.mae)
     print(results.summary())
 
-    return results
+    ##LBj检验残差是否为白噪声
+    ljung_data = lb_test(results.resid['1/8/2021':], return_df=True)
+    print(ljung_data)
 
-
-def predict_RES(res, df):
-    pred = res.get_prediction(start=pd.to_datetime('2021-1-8'), dynamic=False)
-    pred_ci = pred.conf_int()    #置信区间
-    #lower = pred_ci['lower sigRES']
-    #upper = pred_ci['upper sigRES']
-
-    #绘图
-    plt.figure(figsize=(20, 7))
-    plt.subplot(111, facecolor='#FFFFFF')
-    df.plot(color='black', linewidth=2.0, label='原始数据')
-    pred.predicted_mean.plot(color='red',
-                             marker='x',
-                             linewidth=1.0,
-                             label='预测结果')
-    plt.title('残差部分ARIMA模型预测结果')
-    plt.legend(loc='upper left')
-    #plt.fill_between(pred_ci.index, lower, upper, color='r', alpha=0.1)
+    # 也可看一次差分后的ACF图观察随机性 ， 如果是纯随机的则只有o阶最大
+    fig = plt.figure(figsize=(20, 7))
+    ax1 = fig.add_subplot(211, facecolor='#FFFFFF')
+    fig = plot_acf(df.iloc[49:], lags=100, ax=ax1, title='自相关函数图')
+    ax2 = fig.add_subplot(212, facecolor='#FFFFFF')
+    fig = plot_pacf(df.iloc[49:], lags=100, ax=ax2, title='偏自相关函数图')
     plt.show()
 
-    return pred.predicted_mean
 
+    return results
 
 def plot_sum(pred, sig):
     plt.figure(figsize=(20, 7))
@@ -209,20 +203,30 @@ def plot_sum_dynamic(pred, sig):
     plt.title('小波分解重构序列 + 原序列动态预测')
     plt.show()
 
-def predict_RES_dynamic(res, df):
-    pred_dynamic = res.get_prediction(start=pd.to_datetime('2021-1-11'),
-                                      end=pd.to_datetime('2021-1-12'),
-                                      dynamic=True,
-                                      full_results=True)
+def predict_RES_dynamic(res, df_yuan, delt_t, step):  #delt_t 采样时间间隔   step 预测步数
+    time_delt = datetime.timedelta(minutes=delt_t*(step-1))    #预测时长
+    starttime = pd.to_datetime('2021-1-8')
+    df = pd.Series()   #新建空表放预测值
+    while(starttime.__lt__( df_yuan.index[-1] - time_delt )):
+        endtime = starttime + time_delt
+        pred_dynamic = res.get_prediction(start=starttime,
+                                          end=endtime,
+                                          dynamic=True,
+                                          full_results=True)
+        starttime = endtime + datetime.timedelta(minutes=delt_t)
+        df = pd.concat([df, pred_dynamic.predicted_mean])
+
     plt.figure(figsize=(20, 7))
-    df.plot(color='blue', linewidth=2.0)
-    pred_dynamic.predicted_mean.plot(color='red',
-                                     marker='x',
-                                     linewidth=1.0,
-                                     label='dynamic forecast')
-    plt.title('DEN动态预测')
+    plt.subplot(111, facecolor='#FFFFFF')
+    df_yuan.plot(color='black', linewidth=2.0, label='原始数据')
+    df.plot(color='red',
+            marker='x',
+            linewidth=1.0,
+            label='预测结果')
+    plt.title('残差信号多步预测-预测步数' + str(step))
+    plt.legend(loc='upper left')
     plt.show()
-    return pred_dynamic.predicted_mean
+    return df
 
 def predict_DEN_dynamic(res, df_yuan, delt_t, step):  #delt_t 采样时间间隔   step 预测步数
     time_delt = datetime.timedelta(minutes=delt_t*(step-1))    #预测时长
@@ -265,28 +269,23 @@ def sea_dec():
     mod_SEA = SARIMA_DEN(DecomposeResult.seasonal,
                          order=(2, 0, 1),
                          seasonal_order=(0, 1, 0, 48))
-    #静态预测
-    #sea_pred = predict_DEN(mod_SEA, DecomposeResult.seasonal)
     #动态预测
-    #sea_pred_dy = predict_RES_dynamic(mod_SEA, DecomposeResult.seasonal)
+    sea_pred_dy = predict_RES_dynamic(mod_SEA, DecomposeResult.seasonal, delt_t=12, step=1)
 
     ###########trend##########
     mod_TRE = ARIMA_RES(DecomposeResult.trend, order=(2, 0, 2))
-    #静态预测
-    tre_pred = predict_RES(mod_TRE, DecomposeResult.trend)
     #动态预测
-    #tre_pred_dy = predict_RES_dynamic(mod_TRE, DecomposeResult.trend)
+    tre_pred_dy = predict_RES_dynamic(mod_TRE, DecomposeResult.trend, delt_t=12, step=1)
 
     #############res##########
     #cal_res(DecomposeResult.resid)
     mod_RES = ARIMA_RES(DecomposeResult.resid,
                          order=(1, 1, 0))
     #静态预测
-    res_pred = predict_RES(mod_RES, DecomposeResult.resid)
-
+    res_pred_dy = predict_RES_dynamic(mod_RES, DecomposeResult.resid, delt_t=12, step=1)  # delt_t 采样时间间隔   step 预测步数
     ###############################sea+tre############################
     ####单步预测####
-    sum_pred = sea_pred + tre_pred + res_pred
+    sum_pred = sea_pred_dy + tre_pred_dy + res_pred_dy
     plot_sum(sum_pred, sig_resample)
 
     ###计算mape
@@ -368,8 +367,6 @@ def main():
     plt.show()
 
     ##############################sigDEN#############################
-    #ADF 单位根检验判断平稳性
-    #TestStationaryAdfuller(sigDEN_resample)
     ##bic暴力算阶
     #cal(sigDEN_resample['2021-1-7':'2021-1-10'])
 
@@ -390,16 +387,22 @@ def main():
     ##############################sigRES#############################
     ##bic暴力算阶
     #cal_res(sigRES_resample)
+    #ADF 单位根检验判断平稳性
+    #TestStationaryAdfuller(sigRES_resample)
     #训练arima模型
-    mod_RES = ARIMA_RES(sigRES_resample, order=(2, 0, 2))
-    #静态预测
-    res_pred = predict_RES(mod_RES, sigRES_resample)
+    mod_RES = ARIMA_RES(sigRES_resample, order=(2, 0, 3))
     #动态预测
-    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample)
+    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
+    #计算精度
+    true_j = sigRES_resample['1/8/2021':'1/13/2021']
+    pred_j = res_pred_dy['1/8/2021':'1/13/2021']
+    calculate_mod(true_j, pred_j, '残差信号模型样本内预测')
+
+
 
     ###############################DEN+RES############################
     ####单步预测####
-    sum_pred = res_pred + den_pred_dy
+    sum_pred = res_pred_dy + den_pred_dy
     plot_sum(sum_pred, sig_resample)
 
     true_j = sig_resample['1/8/2021':'1/13/2021']
