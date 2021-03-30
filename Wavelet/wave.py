@@ -369,14 +369,17 @@ def calculate_mod(true_j, pred_j, mod_name, slip_num):#每天分为几个时段
         if flag == 1:
             break
     #所有时段输出
+    cal_mape = np.array(cal_mape).reshape(-1, 3)
+    cal_mse = np.array(cal_mse).reshape(-1, 3)
+    cal_mae = np.array(cal_mae).reshape(-1, 3)
     print(mod_name + '-所有分段mape：', cal_mape)
     print(mod_name + '-所有分段mse：', cal_mse)
     print(mod_name + '-所有分段mae：', cal_mae)
 
     #多天各时段平均
-    cal_mape_mean = np.array(cal_mape).mean(axis=0)
-    cal_mae_mean = np.array(cal_mae).mean(axis=0)
-    cal_mse_mean = np.array(cal_mse).mean(axis=0)
+    cal_mape_mean = cal_mape.mean(axis=0)
+    cal_mae_mean = cal_mae.mean(axis=0)
+    cal_mse_mean = cal_mse.mean(axis=0)
     print(mod_name + '-多天分段平均mape：', cal_mape_mean)
     print(mod_name + '-多天分段平均mse：', cal_mse_mean)
     print(mod_name + '-多天分段平均mae：', cal_mae_mean)
@@ -416,7 +419,7 @@ def main():
                          seasonal_order=(0, 1, 0, 48*2.5))
 
     #动态预测
-    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigDEN_resample['1/8/2021':'1/13/2021']
     pred_j = den_pred_dy['1/8/2021':'1/13/2021']
@@ -432,7 +435,7 @@ def main():
     #训练arima模型
     mod_RES = ARIMA_RES(sigRES_resample, order=(2, 0, 3))
     #动态预测
-    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
+    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigRES_resample['1/8/2021':'1/13/2021']
     pred_j = res_pred_dy['1/8/2021':'1/13/2021']
