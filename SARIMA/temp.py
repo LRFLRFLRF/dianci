@@ -32,7 +32,7 @@ df['datetime'] = pd.to_datetime(df['datetime'])
 df.set_index('datetime', inplace=True)
 
 df_yuan = df['rms_val']['1/7/2020':'1/13/2020']
-df_rs1 = df['rms_val'].resample('30T').mean()  # 三十分钟重采样
+df_rs1 = df['rms_val'].resample('12T').mean()  # 三十分钟重采样
 df_rs = df_rs1['1/7/2020':'1/13/2020']
 
 def plot_data(dataframe):
@@ -80,7 +80,7 @@ def df_diff(dataframe, diff_num): #数列向后移动diff_num个位置做差分
 
 def SARIMA(df):
     mod =  SARIMAX(df, order=(2, 0, 1),
-                   seasonal_order=(0, 1, 1, 48),
+                   seasonal_order=(0, 1, 1, 48*2.5),
                    enforce_stationarity=False,
                    enforce_invertibility=False)
     results = mod.fit(maxiter=100)
@@ -113,7 +113,7 @@ def predict(res, df):
                              linewidth=1.0,
                              label='预测结果',
                              marker='x')
-    plt.title('SARIMA方法AIC准则下静态预测')
+    plt.title('单一SARIMA方法预测-预测步数1')
     plt.legend(loc='upper left')
     plt.show()
     return pred.predicted_mean
@@ -174,7 +174,7 @@ def main():
     #TestStationaryAdfuller(df_yuan)
 
     #画出差分后的PACF ACF
-    ACF_PACF(df_rs)
+    #ACF_PACF(df_rs)
 
     #训练sarima模型
     mod_res = SARIMA(df_rs)

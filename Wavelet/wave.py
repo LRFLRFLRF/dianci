@@ -325,10 +325,7 @@ def STL():
     mape_j = sum(np.abs((true_stl - pred_stl) / true_stl)) / len(true_stl) * 100
     print("STL模型总 MAPE_j ：", mape_j)
 
-def calculate_mod(true_j, pred_j, mod_name):
-    if len(true_j) != len(pred_j):
-        true_j = true_j[0:len(pred_j)]
-
+def cal_mod(true_j, pred_j, mod_name):
     ##计算小波分解模型mape
     mape_j = sum(np.abs((true_j-pred_j)/true_j))/len(true_j)*100
     print(mod_name + " MAPE_j ：", mape_j)
@@ -340,6 +337,49 @@ def calculate_mod(true_j, pred_j, mod_name):
     ##计算MAE
     mae_j = sum(np.abs(pred_j - true_j))/len(true_j)
     print(mod_name + " MAE_j ：", mae_j)
+
+    return [mape_j, mse_j, mae_j]
+
+def calculate_mod(true_j, pred_j, mod_name, slip_num):#每天分为几个时段
+    if len(true_j) != len(pred_j):
+        true_j = true_j[0:len(pred_j)]
+
+    #整体计算
+    cal_mod(true_j, pred_j, mod_name)
+
+    #分时段计算
+    delt_min = datetime.timedelta(minutes=24*60/slip_num) #每个时段长度【分钟】
+    starttime = pred_j.index[0]
+    cal_mape = []
+    cal_mse = []
+    cal_mae = []
+    flag = 0
+    while( True ):
+        endtime = starttime + delt_min
+        if endtime.__ge__(true_j.index[-1]):
+            endtime = true_j.index[-1]
+            flag = 1
+        true_cut = true_j[starttime: endtime]
+        pred_cut = pred_j[starttime: endtime]
+        [mape, mse, mae] = cal_mod(true_cut, pred_cut, mod_name)
+        cal_mape.append(mape)
+        cal_mse.append(mse)
+        cal_mae.append(mae)
+        starttime = endtime
+        if flag == 1:
+            break
+    #所有时段输出
+    print(mod_name + '-所有分段mape：', cal_mape)
+    print(mod_name + '-所有分段mse：', cal_mse)
+    print(mod_name + '-所有分段mae：', cal_mae)
+
+    #多天各时段平均
+    cal_mape_mean = np.array(cal_mape).mean(axis=0)
+    cal_mae_mean = np.array(cal_mae).mean(axis=0)
+    cal_mse_mean = np.array(cal_mse).mean(axis=0)
+    print(mod_name + '-多天分段平均mape：', cal_mape_mean)
+    print(mod_name + '-多天分段平均mse：', cal_mse_mean)
+    print(mod_name + '-多天分段平均mae：', cal_mae_mean)
 
 def main():
     ########################seasonal_decompose方法  mape 6.05%  短期预测很好 长期不行
@@ -376,11 +416,11 @@ def main():
                          seasonal_order=(0, 1, 0, 48*2.5))
 
     #动态预测
-    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=1)  #delt_t 采样时间间隔   step 预测步数
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigDEN_resample['1/8/2021':'1/13/2021']
     pred_j = den_pred_dy['1/8/2021':'1/13/2021']
-    calculate_mod(true_j, pred_j, '近似信号模型样本内预测')
+    calculate_mod(true_j, pred_j, '近似信号模型样本内预测', slip_num=3) #每天分为几个时段
 
 
 
@@ -396,7 +436,7 @@ def main():
     #计算精度
     true_j = sigRES_resample['1/8/2021':'1/13/2021']
     pred_j = res_pred_dy['1/8/2021':'1/13/2021']
-    calculate_mod(true_j, pred_j, '残差信号模型样本内预测')
+    calculate_mod(true_j, pred_j, '残差信号模型样本内预测', slip_num=3) #每天分为几个时段
 
 
 
@@ -409,7 +449,7 @@ def main():
     pred_j = sum_pred['1/8/2021':'1/13/2021']
 
     # 计算模型 mape  mae  mse
-    calculate_mod(true_j, pred_j, '小波分解重构模型样本内预测')
+    calculate_mod(true_j, pred_j, '小波分解重构模型样本内预测', slip_num=3) #每天分为几个时段
 
     ####动态预测####
     #sum_pred_dynamic = res_pred_dy + den_pred_dy

@@ -17,7 +17,7 @@ file = pd.read_excel(r'F:\Desktop\dianci\sample_data\20201128-20201205-market\re
 rng = pd.date_range(start='11/28/2020 9:23:00', periods=1999, freq='6T')  #end='12/06/2018 17:11:00'
 df1 = pd.Series(np.array(file['rms_val']), index=rng)
 
-df2 = df1.resample('30T').mean()   #三十分钟重采样
+df2 = df1.resample('12T').mean()   #三十分钟重采样
 df = df2['11/29/2020':'12/4/2020']
 
 def plot_data(df):
@@ -141,10 +141,10 @@ def main():
     #cal(df)
 
     #差分
-    ddf = df_diff(df, 48)  #后移48 做差分  24h*2
+    #ddf = df_diff(df, 48)  #后移48 做差分  24h*2
 
     #ADF 单位根检验判断平稳性
-    TestStationaryAdfuller(ddf)
+    #TestStationaryAdfuller(ddf)
 
     #画出差分后的PACF ACF
     #ACF_PACF(ddf)
