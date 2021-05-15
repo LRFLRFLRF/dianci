@@ -19,7 +19,8 @@ for j = 1:cengshu
         %计算信噪比
         M = mean(y);   %平均值
         SD = std(y, 1);
-        SNR = [SNR 20*log10(M/SD)];
+        %SNR = [SNR 10*log10(M/SD)];
+        SNR = [SNR snr(y,x-y)];
     end
 end
 SNR = reshape(SNR, jieshu, cengshu)';

@@ -47,7 +47,7 @@ figure('color','w');
 % colormap(jet);
 
 
-%% 按全局峰值做幅度归一化
+% %% 按全局峰值做幅度归一化
 % imagesc(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));   %频谱幅度归一化
 % %surf(t, f./(fs/2), 10*log10(abs(s)/max(max(abs(s)))));
 % title('综合电场强度序列频谱图','FontSize',18);
@@ -88,6 +88,18 @@ MS = [];
 size(s, 2)
 for i=1:size(s, 2)
     MS = [MS mean( data_yuan((i-1)*fs/3+1:i*fs/3) )];
+end
+
+%前三个谐波峰值所在频率位置
+abs_s = abs(s);
+B = sort(abs(s),'descend');
+Amax1 =B(1,:);
+Amax2 =B(2,:);
+Amax3 = B(3,:);
+index = [];
+for i=1:size(s, 2)
+    temp = [find(abs_s(:,i)==Amax1(i)); find(abs_s(:,i)==Amax2(i)); find(abs_s(:,i)==Amax3(i));];
+    index = [index temp];
 end
 
 %平均频率 MF
@@ -135,20 +147,11 @@ for i = 1 : size(FC, 2)
 end
 
 
-% 坐标轴下方显示 MS指标
-text(-0.3, 1+0.05*2, 'MS:');  %显示指标名称
-reshape_mat = reshape(MS, 3, 7);  %方便求每天MS最大值
-[max1, loc_max] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
-[min1, loc_min] = min(reshape_mat,[],1);   %min  最小值  loc最小值位置
-for i = 1 : size(MS, 2)
-    if mod(i-1, 3)+1 == loc_max(floor((i-1)/3)+1)
-        % 每天的最大值时间段高亮显示
-        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MS(1, i),'%.3f'),'backgroundcolor', [255,64,0]./255 , 'edgecolor', 'white'); 
-    elseif mod(i-1, 3)+1 == loc_min(floor((i-1)/3)+1)
-        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MS(1, i),'%.3f'),'backgroundcolor', [0,191,255]./255, 'edgecolor', 'white');     
-    else
-        text(1/lenlab * (i-1)+0.045, 1+0.05*2, num2str(MS(1, i),'%.3f'),'backgroundcolor', [154,254,46]./255, 'edgecolor', 'white');   % 用文本的方式添加
-    end
+% 坐标轴下方显示 峰值位置
+text(-0.3, 1+0.05*2, 'HI:');  %显示指标名称
+for i = 1 : size(s, 2)
+    context = [num2str(index(1, i)) ',' num2str(index(2, i)) ',' num2str(index(3, i))];
+    text(1/lenlab * (i-1)+0.045, 1+0.05*2, context,'edgecolor', 'white');
 end
 
 

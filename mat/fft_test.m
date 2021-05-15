@@ -65,11 +65,11 @@ for i= 1:length(data_yuan)/8
     
 end
 
-% %»æÍ¼
-% figure('color','w');
-% plot(y_ifft);
-% hold on;
-% plot(data_yuan)
+%»æÍ¼
+figure('color','w');
+plot(y_ifft);
+hold on;
+plot(data_yuan)
 
 
 
