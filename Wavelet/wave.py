@@ -6,7 +6,7 @@ import pandas as pd
 import datetime
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 #from datetime import datetime
-
+import scipy.io as sio
 from scipy import interpolate
 from pandas import DataFrame,Series
 import statsmodels.api as sm
@@ -51,7 +51,7 @@ sigDEN_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sigDEN = sigDEN_table['sigDEN']['2021-1-7':'2021-1-13']
 sigDEN_resample = sigDEN_table['sigDEN']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
-
+sigDEN_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_7_13_12min.xlsx', sheet_name = 'data1')
 
 #######################SIGRES##########################
 ##遍历excel建立datetime
@@ -66,7 +66,7 @@ sigRES_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sigRES = sigRES_table['sigRES']['2021-1-7':'2021-1-13']
 sigRES_resample = sigRES_table['sigRES']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
-
+sigRES_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\res_7_13_12min.xlsx', sheet_name = 'data1')
 #######################SIG原序列##########################
 ##遍历excel建立datetime
 sig_indexname = {'sig': [], 'datetime': []}
@@ -80,7 +80,8 @@ sig_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sig = sig_table['sig']['2021-1-7':'2021-1-13']
 sig_resample = sig_table['sig']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
-
+sig_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sig_7_13_12min.xlsx', sheet_name = 'data1')
+print()
 def cal(dataframe):
     # 暴力算bic
     p = q = range(0, 3)

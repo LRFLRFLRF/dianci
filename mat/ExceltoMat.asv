@@ -1,10 +1,12 @@
-%% 加载python重采样后原序列，近似序列，残差序列
-filepath = 'E:\Desktop\dianci\Python_code\mat\mat_python\';
-filename = {'app_7_13_12min', 'res_7_13_12min', 'sig_7_13_12min'};
-index = 1;  %修改成 1 2 3   分别存app res sig 到mat里
-data_1 = xlsread([filepath,filename{index},'.xlsx']);
-save(['E:\Desktop\dianci\Python_code\mat\mat_python\' filename{index} '.mat'],'data_1')
+%%加载python重采样后原序列，近似序列，残差序列
+filepath = 'E:\Desktop\dianci\Python_code\mat\mat_python';
+filename = {'app_7_13_12min.xlsx', 'res_7_13_12min.xlsx', 'sig_7_13_12min.xlsx'};
 
+for file = filename
+    temp = xlsread([filepath,file{1}]);
+    d = temp(2:end,:);
+    save('E:\Desktop\dianci\Python_code\mat\106to114_oneDim.mat','data_1')
+end
 
 
 %% 加载6min均方根值
