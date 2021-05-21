@@ -51,7 +51,7 @@ sigDEN_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sigDEN = sigDEN_table['sigDEN']['2021-1-7':'2021-1-13']
 sigDEN_resample = sigDEN_table['sigDEN']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
-sigDEN_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_7_13_12min.xlsx', sheet_name = 'data1')
+#sigDEN_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_7_13_12min.xlsx', sheet_name = 'data1')
 
 #######################SIGRES##########################
 ##遍历excel建立datetime
@@ -66,7 +66,8 @@ sigRES_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sigRES = sigRES_table['sigRES']['2021-1-7':'2021-1-13']
 sigRES_resample = sigRES_table['sigRES']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
-sigRES_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\res_7_13_12min.xlsx', sheet_name = 'data1')
+#sigRES_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\res_7_13_12min.xlsx', sheet_name = 'data1')
+
 #######################SIG原序列##########################
 ##遍历excel建立datetime
 sig_indexname = {'sig': [], 'datetime': []}
@@ -80,7 +81,7 @@ sig_table.set_index('datetime', inplace=True)
 #取要研究的时间段 重采样
 sig = sig_table['sig']['2021-1-7':'2021-1-13']
 sig_resample = sig_table['sig']['2021-1-7':'2021-1-13'].resample('12T').mean()  # 三十分钟重采样
-sig_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sig_7_13_12min.xlsx', sheet_name = 'data1')
+#sig_resample.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sig_7_13_12min.xlsx', sheet_name = 'data1')
 print()
 def cal(dataframe):
     # 暴力算bic
@@ -158,7 +159,7 @@ def SARIMA_DEN(df, order, seasonal_order):
     print(results.summary())
 
 ##LBj检验残差是否为白噪声
-    ljung_data = lb_test(results.resid['1/8/2021':], return_df=True)
+    ljung_data = lb_test(results.resid['1/7/2021':], boxpierce=False, period=120)
     print(ljung_data)
     return results
 
@@ -206,7 +207,7 @@ def plot_sum_dynamic(pred, sig):
 
 def predict_RES_dynamic(res, df_yuan, delt_t, step):  #delt_t 采样时间间隔   step 预测步数
     time_delt = datetime.timedelta(minutes=delt_t*(step-1))    #预测时长
-    starttime = pd.to_datetime('2021-1-8')
+    starttime = pd.to_datetime('2021-1-11')
     df = pd.Series()   #新建空表放预测值
     while(starttime.__lt__( df_yuan.index[-1] - time_delt )):
         endtime = starttime + time_delt
@@ -231,7 +232,7 @@ def predict_RES_dynamic(res, df_yuan, delt_t, step):  #delt_t 采样时间间隔
 
 def predict_DEN_dynamic(res, df_yuan, delt_t, step):  #delt_t 采样时间间隔   step 预测步数
     time_delt = datetime.timedelta(minutes=delt_t*(step-1))    #预测时长
-    starttime = pd.to_datetime('2021-1-8')
+    starttime = pd.to_datetime('2021-1-11')
     df = pd.Series()   #新建空表放预测值
     while(starttime.__lt__( df_yuan.index[-1] - time_delt )):
         endtime = starttime + time_delt
@@ -413,33 +414,33 @@ def main():
     ##############################sigDEN#############################
     ##bic暴力算阶
     #cal(sigDEN_resample['2021-1-7':'2021-1-10'])
-
+    #ADF 单位根检验判断平稳性
+    #TestStationaryAdfuller(sigDEN_resample)
     #训练sarima模型
     mod_DEN = SARIMA_DEN(sigDEN_resample,
-                         order=(2, 0, 2),
+                         order=(2, 1, 2),
                          seasonal_order=(0, 1, 0, 48*2.5))
 
     #动态预测
-    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
-    true_j = sigDEN_resample['1/8/2021':'1/13/2021']
-    pred_j = den_pred_dy['1/8/2021':'1/13/2021']
+    true_j = sigDEN_resample['1/11/2021':'1/13/2021']
+    pred_j = den_pred_dy['1/11/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '近似信号模型样本内预测', slip_num=3) #每天分为几个时段
-
+    den_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_sarima_212_010_pred.xlsx', sheet_name='data1')
 
 
     ##############################sigRES#############################
     ##bic暴力算阶
     #cal_res(sigRES_resample)
-    #ADF 单位根检验判断平稳性
-    #TestStationaryAdfuller(sigRES_resample)
+
     #训练arima模型
-    mod_RES = ARIMA_RES(sigRES_resample, order=(2, 0, 3))
+    mod_RES = ARIMA_RES(sigRES_resample, order=(5, 0, 2))
     #动态预测
-    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
+    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
-    true_j = sigRES_resample['1/8/2021':'1/13/2021']
-    pred_j = res_pred_dy['1/8/2021':'1/13/2021']
+    true_j = sigRES_resample['1/11/2021':'1/13/2021']
+    pred_j = res_pred_dy['1/11/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '残差信号模型样本内预测', slip_num=3) #每天分为几个时段
 
 
@@ -449,8 +450,8 @@ def main():
     sum_pred = res_pred_dy + den_pred_dy
     plot_sum(sum_pred, sig_resample)
 
-    true_j = sig_resample['1/8/2021':'1/13/2021']
-    pred_j = sum_pred['1/8/2021':'1/13/2021']
+    true_j = sig_resample['1/11/2021':'1/13/2021']
+    pred_j = sum_pred['1/11/2021':'1/13/2021']
 
     # 计算模型 mape  mae  mse
     calculate_mod(true_j, pred_j, '小波分解重构模型样本内预测', slip_num=3) #每天分为几个时段

@@ -18,7 +18,7 @@ MA_Order = 2;
 diff_num = 0;
 len = length(data_yuan);
 % 拟合
-Mdl = arima('Constant', 0,'ARLags', [1,2],'MALags', [1,2], 'Seasonality', 120);
+Mdl = arima('Constant', 0, 'Seasonality', 120,'D',1,'ARLags',[1,2,3,4,5]);
 EstMdl = estimate(Mdl,data_yuan);
 step = 10;  %预测步数
 % 单步预测

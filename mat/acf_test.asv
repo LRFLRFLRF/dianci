@@ -30,20 +30,12 @@ data_pred = getfield(dat, name);    %根据字段名读取数据
 
 %% 绘制app 和 app预测数据图
 
-
 figure('color','w');
-plot(data,'black');
+plot(data);
 hold on;
-x = [120*4+1:120*4+length(data_pred)];
-plot(x,data_pred','-r.');
-ylim([0.15,0.6]);
-xlim([0,7*120]);
-xlabel('Time[Day]');
-ylabel('E[V/m]');
-set(gca,'XTick',1:120:120*7);
-set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
-set(gca, 'XGrid', 'on');% 显示网格
-set(gca, 'YGrid', 'on');% 显示网格
+plot(data_pred)
+
+
 %% adf检验平稳性
 %[H,pValue,stat,cValue,reg] = adftest(data)
 
