@@ -105,7 +105,7 @@ def SARIMA(df):
     return results
 
 def predict(res, df):
-    pred = res.get_prediction(start=pd.to_datetime('2020-1-8'), dynamic=False)
+    pred = res.get_prediction(start=pd.to_datetime('2020-1-11'), dynamic=False)
     pred_ci = pred.conf_int()
     plt.figure(figsize=(20, 7))
     plt.subplot(111, facecolor='#FFFFFF')
@@ -243,11 +243,12 @@ def main():
 
     #静态预测
     pred_j = predict(mod_res, df_rs)
-    res_j = df_rs['1/7/2020':'1/13/2020'] - pred_j['1/7/2020':'1/13/2020']
+    pred_j.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\single_sarima_pred.xlsx', sheet_name='data1')
+    res_j = df_rs['1/11/2020':'1/13/2020'] - pred_j['1/11/2020':'1/13/2020']
     plot_data(res_j) #绘制残差
     #计算
-    true_j = df_rs['1/8/2020':'1/13/2020']
-    pred_j = pred_j['1/8/2020':'1/13/2020']
+    true_j = df_rs['1/11/2020':'1/13/2020']
+    pred_j = pred_j['1/11/2020':'1/13/2020']
     calculate_mod(true_j, pred_j, '单一SARIMA样本内预测', slip_num=3)  # 每天分为几个时段
 
     #动态预测

@@ -169,7 +169,7 @@ def ARIMA_RES(df, order):
                    enforce_invertibility=False)
     results = mod.fit(maxiter=100)
     print("模型中实际估计的自回归参数 :", results.arparams)
-#    print("模型中实际估算的移动平均参数 :", results.maparams)
+    print("模型中实际估算的移动平均参数 :", results.maparams)
     print("模型 MSE :", results.mse)
     print("模型 MAE :", results.mae)
     print(results.summary())
@@ -422,12 +422,12 @@ def main():
                          seasonal_order=(0, 1, 0, 48*2.5))
 
     #动态预测
-    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigDEN_resample['1/11/2021':'1/13/2021']
     pred_j = den_pred_dy['1/11/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '近似信号模型样本内预测', slip_num=3) #每天分为几个时段
-    den_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_sarima_212_010_pred.xlsx', sheet_name='data1')
+    #den_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_sarima_212_010_pred.xlsx', sheet_name='data1')
 
 
     ##############################sigRES#############################
@@ -435,19 +435,20 @@ def main():
     #cal_res(sigRES_resample)
 
     #训练arima模型
-    mod_RES = ARIMA_RES(sigRES_resample, order=(5, 0, 2))
+    mod_RES = ARIMA_RES(sigRES_resample, order=(6, 0, 2))
     #动态预测
-    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
+    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigRES_resample['1/11/2021':'1/13/2021']
     pred_j = res_pred_dy['1/11/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '残差信号模型样本内预测', slip_num=3) #每天分为几个时段
-
+    #res_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\res_arima_602_pred.xlsx', sheet_name='data1')
 
 
     ###############################DEN+RES############################
     ####单步预测####
     sum_pred = res_pred_dy + den_pred_dy
+    sum_pred.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sum_pred.xlsx', sheet_name='data1')
     plot_sum(sum_pred, sig_resample)
 
     true_j = sig_resample['1/11/2021':'1/13/2021']
