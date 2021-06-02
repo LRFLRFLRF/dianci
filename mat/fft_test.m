@@ -43,11 +43,12 @@ Pyy = Y.*conj(Y)/n;
 f = Fs/n*(0:n/12);
 figure('color','w');
 plot(f,Pyy(1:n/12+1) , 'color', 'black', 'LineWidth', 1.5)
-title('频谱强度','FontSize',18)
-set(gca,'XTick',[0:1:30]);%设置要显示坐标刻度
-xlabel('频率 [1/24h]','FontSize',18);
-
-
+%title('频谱强度','FontSize',18)
+set(gca,'XTick',[0:1:30],'FontSize',20);%设置要显示坐标刻度
+xlabel('Frequency[1/24h]','FontSize',20);
+ylabel('Amplitude[V/m]','FontSize',20);
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
 %% IFFT反变换
 R2 = [];
 for i= 1:length(data_yuan)/8

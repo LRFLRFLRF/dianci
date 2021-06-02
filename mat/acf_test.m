@@ -1,7 +1,16 @@
 
 clc;
 clear;
-%% 加载原数据
+%% 加载6min原数据
+data_path = 'E:\Desktop\dianci\Python_code\mat\mat_xls_file\';  
+data_name = 'sig';
+%加载波形
+dat = load([data_path, data_name, '.mat']);   
+fieldname = fieldnames(dat);   %获取字段名
+name = fieldname{1};
+yuan = getfield(dat, name);    %根据字段名读取数据
+
+%% 加载12min原数据
 data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
 data_name = 'sig_7_13_12min';
 %加载波形
@@ -9,6 +18,15 @@ dat = load([data_path, data_name, '.mat']);
 fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 yuan = getfield(dat, name);    %根据字段名读取数据
+
+%% 加载 sum 预测数据
+data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
+data_name = 'sum_pred';
+%加载波形
+dat = load([data_path, data_name, '.mat']);   
+fieldname = fieldnames(dat);   %获取字段名
+name = fieldname{1};
+sum_pred = getfield(dat, name);    %根据字段名读取数据
 
 %% 加载single sarima sum 预测数据
 data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
@@ -56,6 +74,19 @@ fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 data_res_pred = getfield(dat, name);    %根据字段名读取数据
 
+
+%% 绘制6min原数据图
+figure('color','w');
+plot(yuan(:,6),'black');
+ylim([0.15,1]);
+xlim([0,7*240]);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:240:240*7,'fontsize',20);
+set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+
 %% 绘制app 和 app预测数据图
 figure('color','w');
 plot(data,'black');
@@ -64,9 +95,9 @@ x = [120*4+1:120*4+length(data_pred)];
 plot(x,data_pred','-r.');
 ylim([0.15,0.6]);
 xlim([0,7*120]);
-xlabel('Time[Day]');
-ylabel('E[V/m]');
-set(gca,'XTick',1:120:120*7);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
 set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
@@ -79,9 +110,9 @@ x = [120*4+1:120*4+length(data_res_pred)];
 plot(x,data_res_pred','-r.');
 %ylim([0.15,0.6]);
 xlim([0,7*120]);
-xlabel('Time[Day]');
-ylabel('E[V/m]');
-set(gca,'XTick',1:120:120*7);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
 set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
@@ -94,9 +125,9 @@ x = [120*4+1:120*4+length(sum_pred)];
 plot(x,sum_pred','-r.');
 ylim([0.15,0.7]);
 xlim([0,7*120]);
-xlabel('Time[Day]');
-ylabel('E[V/m]');
-set(gca,'XTick',1:120:120*7);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
 set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
@@ -109,9 +140,9 @@ x = [120*4+1:120*4+length(single_sum_pred)];
 plot(x,single_sum_pred','-r.');
 ylim([0.15,0.7]);
 xlim([0,7*120]);
-xlabel('Time[Day]');
-ylabel('E[V/m]');
-set(gca,'XTick',1:120:120*7);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
 set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格

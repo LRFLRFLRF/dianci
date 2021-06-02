@@ -43,7 +43,7 @@ summary(fit_test)
 
 
 
-fit1 <- arima(app, order=c(2,1,1),seasonal=list(order = c(0,1,0), period = 120))
+fit1 <- arima(app, order=c(2,1,2),seasonal=list(order = c(0,1,0), period = 120))
 
 summary(fit1)
 cancha = residuals(fit1)
@@ -70,8 +70,31 @@ adf.test(app_diff1)
 res<-ts(res_7_13_12min$sigRES,frequency = 120)
 plot(res)
 
-b = auto.arima(res, seasonal = F)
+
+
+b = auto.arima(res, seasonal = F,max.p = 20)
 b
+
+
+adf.test(res)
+
+tsdisplay(res)
+acf <-acf(res,main=" ")
+pacf <-pacf(res,main=" ")
+
+
+fit2 <- arima(res, order=c(5,0,2))
+summary(fit2)
+cancha_res = residuals(fit2)
+plot(cancha_res)
+
+
+plot(forecast(fit2,h=120))
+
+qqnorm(cancha_res)
+qqline(cancha_res)
+
+Box.test(cancha_res,type="Ljung-Box")
 
 
 

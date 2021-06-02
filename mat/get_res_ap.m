@@ -34,9 +34,16 @@ figure('color','w');
 plot(data_yuan(:,6) , 'color', 'black', 'LineWidth', 1.0);
 hold on;
 plot(data_node , 'color', 'red', 'LineWidth', 1.5);
-title('原始电场强度信号与近似信号','FontSize',18);
-ylabel('电场强度[v/m]','FontSize',18)
-h = legend('原始电场强度','近似电场强度','Location', 'northwest');
+%title('原始电场强度信号与近似信号','FontSize',18);
+h = legend('The raw signal','The approximate signal','Location', 'northwest');
 set(h, 'FontSize', 15);
+ylim([0.15,1]);
+xlim([0,7*240]);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:240:240*7,'fontsize',20);
+set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
 end
 

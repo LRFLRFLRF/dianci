@@ -12,6 +12,12 @@ index_pred = 1;  %修改成 1 2 3   分别存app res sig 到mat里
 data_1 = xlsread([filepath,filename{index_pred},'.xlsx']);
 save(['E:\Desktop\dianci\Python_code\mat\mat_python\' filename{index_pred} '.mat'],'data_1')
 
+%% 加载6min原数据
+filepath = 'E:\Desktop\dianci\Python_code\mat\mat_xls_file\';
+filename = {'sig'};
+index_pred = 1;  %修改成 1 2 3   分别存app res sig 到mat里
+data_1 = xlsread([filepath,filename{index_pred},'.xls']);
+save(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\' filename{index_pred} '.mat'],'data_1')
 
 %% 加载python sum预测数据
 filepath = 'E:\Desktop\dianci\Python_code\mat\mat_python\';

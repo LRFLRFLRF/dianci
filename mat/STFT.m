@@ -61,18 +61,28 @@ figure('color','w');
 max_col = repmat(max(abs(s),[],1), size(s,1), 1);
 s_1 = abs(s)./max_col;
 imagesc(t, f./(fs/2), 10*log10(s_1) );   %频谱幅度归一化
-title('综合电场强度序列频谱图','FontSize',18);
-xlabel('天数','FontSize',18); ylabel('归一化频率','FontSize',18);
+%title('综合电场强度序列频谱图','FontSize',20);
+xlabel('Time[Day]','FontSize',20); ylabel('Normalized frequency','FontSize',20);
 colorbar;
-ylabel(colorbar,'归一化频谱幅度 [dB]','FontSize',18);
+ylabel(colorbar,'Normalized STFT [dB]','FontSize',20);
 colormap(jet);
 
 %% 显示[上下午]标签文字
-yLabels = {'0-8点', '8-16点', '16-24点'};  % 待添加的标签
+yLabels = {'0-8', '8-16', '16-24'};  % 待添加的标签
 lenlab = length(yLabels);
 for i = 0 : length(yLabels)*7-1
-    text(1/lenlab * i+0.05, 1-0.025, yLabels(mod(i,3)+1));   % 用文本的方式添加，位置可以自定义
+    if mod(i,3)+1==2
+        offset = 0.005;
+    elseif mod(i,3)+1==1
+        offset = 0.05;
+    else
+        offset = 0;
+    end
+    text(1/lenlab * i+0.06+offset, 1-0.05, yLabels(mod(i,3)+1));   % 用文本的方式添加，位置可以自定义
+    text(1/lenlab * i+0.045, 1-0.025, 'o''clock','FontSize',15);
 end
+
+
 
 % x轴位于上方
 ax = gca;
@@ -80,6 +90,7 @@ ax.XAxisLocation = 'top';
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca,'LineWid',1.5);  %网格线宽
 set(gca, 'GridAlpha', 1);  % 设置透明度
+set(gca,'fontsize',20);
 %% 频率特征提取
 norm_freq_mat = repmat(f./(fs/2), 1, size(s, 2));%归一化频率矩阵
 
@@ -131,27 +142,27 @@ save('E:\Desktop\dianci\Python_code\mat\freq_feat.mat','result')
 
 %% 指标显示
 % 坐标轴下方显示 FC指标
-text(-0.3, 1+0.05, 'FC:');  %显示指标名称
+text(-0.3, 1+0.05, 'FC:','FontSize',20);  %显示指标名称
 reshape_mat = reshape(FC, 3, 7);  %方便求每天FC最大值
 [max1, loc_max] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
 [min1, loc_min] = min(reshape_mat,[],1);   %min  最小值  loc最小值位置
 for i = 1 : size(FC, 2)
     if mod(i-1, 3)+1 == loc_max(floor((i-1)/3)+1)
         % 每天的最大值时间段高亮显示
-        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [255,64,0]./255 , 'edgecolor', 'white'); 
+        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [255,64,0]./255 , 'edgecolor', 'white','FontSize',12); 
     elseif mod(i-1, 3)+1 == loc_min(floor((i-1)/3)+1)
-        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [0,191,255]./255, 'edgecolor', 'white');     
+        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [0,191,255]./255, 'edgecolor', 'white','FontSize',12);     
     else
-        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [154,254,46]./255, 'edgecolor', 'white');   % 用文本的方式添加
+        text(1/lenlab * (i-1)+0.045, 1+0.05, num2str(FC(1, i),'%.3f'),'backgroundcolor', [154,254,46]./255, 'edgecolor', 'white','FontSize',12);   % 用文本的方式添加
     end
 end
 
 
 % 坐标轴下方显示 峰值位置
-text(-0.3, 1+0.05*2, 'HI:');  %显示指标名称
+text(-0.45, 1+0.05*2, 'index:','FontSize',20);  %显示指标名称
 for i = 1 : size(s, 2)
     context = [num2str(index(1, i)) ',' num2str(index(2, i)) ',' num2str(index(3, i))];
-    text(1/lenlab * (i-1)+0.045, 1+0.05*2, context,'edgecolor', 'white');
+    text(1/lenlab * (i-1)+0.045, 1+0.05*2+0.01, context,'edgecolor', 'white','FontSize',12);
 end
 
 

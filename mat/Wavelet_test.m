@@ -91,12 +91,15 @@ for i =1 :size(coef,2)
     f = Fs/n*(0:n/2);
     subplot(str2num([num2str(size(coef,2)) '1', num2str(i)]));
     plot(f,Pyy(1:n/2+1) , 'color', 'black', 'LineWidth', 1.5)
-    set(gca,'XTick',[0:5:150]);%设置要显示坐标刻度
+    set(gca,'XTick',[0:5:150],'FontSize',15);%设置要显示坐标刻度
+    ylabel('Amplitude[V/m]','FontSize',15);
+    %set(gca,'FontSize',20);
+    %set(gca,'xticklabel',[])
     if i == 1
-        title(['近似信号A' num2str(size(coef,2) -1) '频谱强度'],'FontSize',18)
+        title(['The frequency band of the approximate signal A' num2str(size(coef,2) -1) ],'FontSize',20)
     else
-        title(['细节信号D' num2str(size(coef,2) - i +1) '频谱强度'],'FontSize',18)
+        title(['The frequency band of the detail signal D' num2str(size(coef,2) - i +1) ],'FontSize',20)
     end
     hold on;
 end
-xlabel('频率 [1/24h]','FontSize',18);
+xlabel('Frequency [1/24h]','FontSize',20);
