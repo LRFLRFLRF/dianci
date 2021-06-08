@@ -13,15 +13,17 @@ function get_res_ap()
     fieldname = fieldnames(dat);   %获取字段名
     name = fieldname{1};
     data_yuan = getfield(dat, name);    %根据字段名读取数据
-
+    
+    data_yuan = data_yuan(23:end,:);    % 把1月6号的数据删除掉！！！！！！！！！！！否则对不齐
+    
     %加载结点construct波形
     dat = load([node_data_path, node_data_name, '.mat']);      
     fieldname = fieldnames(dat);   %获取字段名
     name = fieldname{1};
     data_node = getfield(dat, name)';
+    
 
-
-    %写入excel
+    %% 写入excel
     write_date_den = [data_yuan(:,1:5) data_node];  %拼接原表格前五列时间数据
     xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_DEN.xls'], write_date_den)    %写入指定结点的 construc波形
 

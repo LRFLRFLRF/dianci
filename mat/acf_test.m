@@ -19,6 +19,15 @@ fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 yuan = getfield(dat, name);    %根据字段名读取数据
 
+%% 加载 lstm 预测数据
+data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
+data_name = 'lstm_onepoint';
+%加载波形
+dat = load([data_path, data_name, '.mat']);   
+fieldname = fieldnames(dat);   %获取字段名
+name = fieldname{1};
+lstm_pred = getfield(dat, name);    %根据字段名读取数据
+
 %% 加载 sum 预测数据
 data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
 data_name = 'sum_pred';
@@ -146,6 +155,22 @@ set(gca,'XTick',1:120:120*7,'fontsize',20);
 set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
+
+%% 绘制yuan数据 和lstm预测数据图
+figure('color','w');
+plot(yuan,'black');
+hold on;
+x = [120*4+1:120*4+length(lstm_pred)];
+plot(x,lstm_pred(:,2)','-r.');
+ylim([0.15,0.7]);
+xlim([0,7*120]);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
+set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+
 
 
 %% adf检验平稳性

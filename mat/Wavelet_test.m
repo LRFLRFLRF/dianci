@@ -1,6 +1,6 @@
 
-load 106to114_oneDim.mat
-x = data_1;
+load 107to113_oneDim.mat
+x = data_yuan1;
 
 %% 计算最大信噪比
 SNR = [];

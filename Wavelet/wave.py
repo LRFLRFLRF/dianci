@@ -148,6 +148,8 @@ def SARIMA_DEN(df, order, seasonal_order):
                   seasonal_order=seasonal_order,
                   enforce_stationarity=False,
                   enforce_invertibility=False)
+    # with mod.fix_params({'ar.L1': 1.8615, 'ar.L2': -0.9382, 'ma.L1': 1.1585, 'ma.L2': 0.4956}):
+    #     results = mod.fit(maxiter=100)
     results = mod.fit(maxiter=100)
     print('BIC:{}'.format(results.bic))
     print("模型中实际估计的自回归参数 :", results.arparams)
@@ -420,9 +422,9 @@ def main():
     mod_DEN = SARIMA_DEN(sigDEN_resample,
                          order=(2, 1, 2),
                          seasonal_order=(0, 1, 0, 48*2.5))
-
+    #['2021-1-7':'2021-1-10']
     #动态预测
-    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigDEN_resample['1/11/2021':'1/13/2021']
     pred_j = den_pred_dy['1/11/2021':'1/13/2021']
@@ -437,7 +439,7 @@ def main():
     #训练arima模型
     mod_RES = ARIMA_RES(sigRES_resample, order=(6, 0, 2))
     #动态预测
-    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=10)  #delt_t 采样时间间隔   step 预测步数
+    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigRES_resample['1/11/2021':'1/13/2021']
     pred_j = res_pred_dy['1/11/2021':'1/13/2021']

@@ -40,6 +40,13 @@ index_pred = 1;  %修改成 1 2 3   分别存app res sig 到mat里
 data_1 = xlsread([filepath,filename{index_pred},'.xlsx']);
 save(['E:\Desktop\dianci\Python_code\mat\mat_python\' filename{index_pred} '.mat'],'data_1')
 
+%% 加载python lstm预测数据
+filepath = 'E:\Desktop\dianci\Python_code\mat\mat_python\';
+filename = {'lstm_onepoint'};
+index_pred = 1;  %修改成 1 2 3 
+data_1 = xlsread([filepath,filename{index_pred},'.xlsx']);
+save(['E:\Desktop\dianci\Python_code\mat\mat_python\' filename{index_pred} '.mat'],'data_1')
+
 %% 加载r语言csv
 filepath = 'E:\Desktop\dianci\Python_code\mat\xls_r\';
 filename = {'app_diff1'};
