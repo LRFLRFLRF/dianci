@@ -4,7 +4,7 @@
 		"columns": [
 			"sig"
 		],
-		"sequence_length": 5,
+		"sequence_length": 2,
 		"train_test_split": 0.5714,
 		"normalise": false
 	},

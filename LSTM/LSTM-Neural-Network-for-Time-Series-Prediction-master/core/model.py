@@ -94,6 +94,9 @@ class Model():
 		predicted = np.reshape(predicted, (predicted.size,))
 		return predicted
 
+
+
+
 	def predict_sequences_multiple(self, data, window_size, prediction_len):
 		#Predict sequence of 50 steps before shifting prediction run forward by 50 steps
 		print('[Model] Predicting Sequences Multiple...')
@@ -102,6 +105,8 @@ class Model():
 			curr_frame = data[i*prediction_len]
 			predicted = []
 			for j in range(prediction_len):
+				print(curr_frame[newaxis,:,:])
+
 				predicted.append(self.model.predict(curr_frame[newaxis,:,:])[0,0])
 				curr_frame = curr_frame[1:]
 				curr_frame = np.insert(curr_frame, [window_size-2], predicted[-1], axis=0)

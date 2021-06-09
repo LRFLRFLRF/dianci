@@ -429,7 +429,7 @@ def main():
     true_j = sigDEN_resample['1/11/2021':'1/13/2021']
     pred_j = den_pred_dy['1/11/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '近似信号模型样本内预测', slip_num=3) #每天分为几个时段
-    #den_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_sarima_212_010_pred.xlsx', sheet_name='data1')
+    #den_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\app_sarima_212_010_pred_1step.xlsx', sheet_name='data1')
 
 
     ##############################sigRES#############################
@@ -444,13 +444,13 @@ def main():
     true_j = sigRES_resample['1/11/2021':'1/13/2021']
     pred_j = res_pred_dy['1/11/2021':'1/13/2021']
     calculate_mod(true_j, pred_j, '残差信号模型样本内预测', slip_num=3) #每天分为几个时段
-    #res_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\res_arima_602_pred.xlsx', sheet_name='data1')
+    #res_pred_dy.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\res_arima_602_pred_1step.xlsx', sheet_name='data1')
 
 
     ###############################DEN+RES############################
     ####单步预测####
     sum_pred = res_pred_dy + den_pred_dy
-    sum_pred.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sum_pred.xlsx', sheet_name='data1')
+    #sum_pred.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sum_pred.xlsx', sheet_name='data1')
     plot_sum(sum_pred, sig_resample)
 
     true_j = sig_resample['1/11/2021':'1/13/2021']

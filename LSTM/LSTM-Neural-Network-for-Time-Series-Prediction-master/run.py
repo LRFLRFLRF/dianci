@@ -80,14 +80,14 @@ def main():
     )
 
 
-    #predictions = model.predict_sequences_multiple(x_test, configs['data']['sequence_length'], configs['data']['sequence_length'])
-    predictions = model.predict_sequence_full(x_test, configs['data']['sequence_length'])
+    predictions = model.predict_sequences_multiple(x_test, configs['data']['sequence_length'], configs['data']['sequence_length'])
+    #predictions = model.predict_sequence_full(x_test, configs['data']['sequence_length'])
     #predictions = model.predict_point_by_point(x_test)
     #data_df = pd.DataFrame(predictions)
     #data_df.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\lstm_onepoint.xlsx', sheet_name='data1')
 
-    #plot_results_multiple(predictions, y_test, configs['data']['sequence_length'])
-    plot_results(predictions, y_test)
+    plot_results_multiple(predictions, y_test, configs['data']['sequence_length'])
+    #plot_results(predictions, y_test)
 
 
 if __name__ == '__main__':

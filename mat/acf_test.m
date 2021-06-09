@@ -28,7 +28,7 @@ fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 lstm_pred = getfield(dat, name);    %根据字段名读取数据
 
-%% 加载 sum 预测数据
+%% 加载 sum 预测数据 5steps
 data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
 data_name = 'sum_pred';
 %加载波形
@@ -36,6 +36,15 @@ dat = load([data_path, data_name, '.mat']);
 fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 sum_pred = getfield(dat, name);    %根据字段名读取数据
+
+%% 加载 sum 预测数据 1steps
+data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
+data_name = 'sum_pred_1step';
+%加载波形
+dat = load([data_path, data_name, '.mat']);   
+fieldname = fieldnames(dat);   %获取字段名
+name = fieldname{1};
+sum_pred_1step = getfield(dat, name);    %根据字段名读取数据
 
 %% 加载single sarima sum 预测数据
 data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
@@ -126,7 +135,7 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
-%% 绘制yuan数据 和 sum预测数据图
+%% 绘制yuan数据 和 sum预测数据图 5steps
 figure('color','w');
 plot(yuan,'black');
 hold on;
@@ -140,6 +149,50 @@ set(gca,'XTick',1:120:120*7,'fontsize',20);
 set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
+
+%计算 分段mape
+for i=1:9
+    if i==9
+        observed = yuan(481+40*(i-1):end-5);
+        pre = sum_pred(1+(i-1)*40:end);
+    else
+        observed = yuan(481+40*(i-1):481+40*i-1);
+        pre = sum_pred(1+(i-1)*40:40*i);
+    end
+ 
+    mape_fenduan = mean(abs((observed - pre)./observed))*100
+    mae_fenduan = mean(abs(observed - pre))
+end
+
+%% 绘制yuan数据 和 sum预测数据图 1step
+figure('color','w');
+plot(yuan,'black');
+hold on;
+x = [120*4+1:120*4+length(sum_pred_1step)];
+plot(x,sum_pred_1step','-r.');
+ylim([0.15,0.7]);
+xlim([0,7*120]);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
+set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+
+%计算 分段mape
+for i=1:9
+    if i==9
+        observed = yuan(481+40*(i-1):end-1);
+        pre = sum_pred_1step(1+(i-1)*40:end);
+    else
+        observed = yuan(481+40*(i-1):481+40*i-1);
+        pre = sum_pred_1step(1+(i-1)*40:40*i);
+    end
+ 
+    mape_fenduan = mean(abs((observed - pre)./observed))*100
+    mae_fenduan = mean(abs(observed - pre))
+end
+
 
 %% 绘制yuan数据 和single sarima sum预测数据图
 figure('color','w');
@@ -156,35 +209,84 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
-%% 绘制yuan数据 和lstm预测数据图
+%计算 分段mape
+for i=1:9
+    observed = yuan(481+40*(i-1):481+40*i-1);
+    pre = single_sum_pred(1+(i-1)*40:40*i);
+  
+    mape_fenduan = mean(abs((observed - pre)./observed))*100
+    mae_fenduan = mean(abs(observed - pre))
+end
+
+
+%% 绘制yuan数据 和lstm预测数据图 以及计算mape mae
 figure('color','w');
-plot(yuan,'black');
+plot(yuan(481-120:end),'black','LineWidth',1.0);
 hold on;
-x = [120*4+1:120*4+length(lstm_pred)];
-plot(x,lstm_pred(:,2)','-r.');
+x = [1+120:length(lstm_pred)+120];
+plot(x,lstm_pred(:,2)','-g.');
+hold on;
+x = [1+120:length(single_sum_pred)+120];
+plot(x,single_sum_pred','-b.');
+hold on;
+x = [1+120:length(sum_pred)+120];
+plot(x,sum_pred','-r.');
 ylim([0.15,0.7]);
-xlim([0,7*120]);
+xlim([0,4*120]);
 xlabel('Time[Day]','fontsize',20);
 ylabel('E[V/m]','fontsize',20);
-set(gca,'XTick',1:120:120*7,'fontsize',20);
-set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
+set(gca,'XTick',1:120:120*4,'fontsize',20);
+set(gca,'XTicklabel',{'4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
+h = legend('The raw signal','LSTM  1-step','SARIMA  1-step','Hybrid method  5-steps','northeast');
+set(h, 'FontSize', 15);
 
+% 计算 整体mape
+observed = yuan(481:481+length(lstm_pred)-1);
+mape = mean(abs((observed - lstm_pred(:,2))./observed))*100
+mae = mean(abs(observed - lstm_pred(:,2)))
 
+%计算 分段mape
+for i=1:9
+    if i==9
+        observed = yuan(481+40*(i-1):end-4);
+        pre = lstm_pred(1+(i-1)*40:end,2);
+    else
+        observed = yuan(481+40*(i-1):481+40*i-1);
+        pre = lstm_pred(1+(i-1)*40:40*i,2);
+    end
+    mape_fenduan = mean(abs((observed - pre)./observed))*100
+    mae_fenduan = mean(abs(observed - pre))
+end
 
-%% adf检验平稳性
-%[H,pValue,stat,cValue,reg] = adftest(data)
+%% 绘制mape 和 mae 折线图
 
-%% acf pacf
-% data1 = diff(data, 120);
-% data2 = diff(data1, 1);
-plot(data)
+hybrid_1_mape = [1.8696,3.7333,2.7634,2.4048,2.9681,8.3789,3.6414,3.9007,7.8577];
+hybrid_5_mape = [2.4035,4.1002,3.218,2.7014,3.6543,9.2298,3.9787,5.0952,11.0329];
+lstm_mape = [3.4483,5.2486,2.9851,2.1018,3.6756,8.2181,2.4987,4.228,8.3138];
+sarma_mape = [3.4548,5.626,8.4636,3.3421,5.1117,12.555,6.057,8.9715,11.6865];
+
 figure('color','w');
-autocorr(data)       %画出自相关图，图中上下两条横线分别表示自相关系数的上下界，超出边界的部分表示存在相关关系。
-[a,b] = autocorr(data)   %a 为各阶的相关系数，b 为滞后阶数'
+x = [0.5:8.5];
+plot(x,hybrid_1_mape,'-r*');
+hold on;
+plot(x,hybrid_5_mape,'-k*');
+plot(x,lstm_mape,'-g*');
+plot(x,sarma_mape,'-b*');
+xlim([0,7*120]);
+xlabel('Time[Windows]','fontsize',20);
+ylabel('MAPE[%]','fontsize',20);
+set(gca,'XTick',0:9,'fontsize',17);
+%'0-8o''clock','8-16o''clock','16-24o''clock'
+set(gca,'XTicklabel',[]);
+yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
+for i = 1 : length(yLabels)
+    text(-0.5+1 * i,-0.5,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+end
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
+set(h, 'FontSize', 15);
 
-figure('color','w');
-parcorr(data)  %画出偏自相关图
-[c,d] = parcorr(data)    %c 为各阶的偏自相关系数，d 为滞后阶数
 
