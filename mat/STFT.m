@@ -79,7 +79,7 @@ for i = 0 : length(yLabels)*7-1
         offset = 0;
     end
     text(1/lenlab * i+0.06+offset, 1-0.05, yLabels(mod(i,3)+1));   % 用文本的方式添加，位置可以自定义
-    text(1/lenlab * i+0.045, 1-0.025, 'o''clock','FontSize',15);
+    text(1/lenlab * i+0.045, 1-0.025, 'o''clock','FontSize',10);
 end
 
 

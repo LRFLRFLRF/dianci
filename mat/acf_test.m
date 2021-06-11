@@ -260,7 +260,7 @@ for i=1:9
     mae_fenduan = mean(abs(observed - pre))
 end
 
-%% 绘制mape 和 mae 折线图
+%% 绘制mape折线图
 
 hybrid_1_mape = [1.8696,3.7333,2.7634,2.4048,2.9681,8.3789,3.6414,3.9007,7.8577];
 hybrid_5_mape = [2.4035,4.1002,3.218,2.7014,3.6543,9.2298,3.9787,5.0952,11.0329];
@@ -269,21 +269,50 @@ sarma_mape = [3.4548,5.626,8.4636,3.3421,5.1117,12.555,6.057,8.9715,11.6865];
 
 figure('color','w');
 x = [0.5:8.5];
-plot(x,hybrid_1_mape,'-r*');
+plot(x,hybrid_1_mape,'-r*', 'Linewidth', 1.5);
 hold on;
-plot(x,hybrid_5_mape,'-k*');
-plot(x,lstm_mape,'-g*');
-plot(x,sarma_mape,'-b*');
-xlim([0,7*120]);
-xlabel('Time[Windows]','fontsize',20);
+plot(x,hybrid_5_mape,'-k*', 'Linewidth', 1.5);
+plot(x,lstm_mape,'-g*', 'Linewidth', 1.5);
+plot(x,sarma_mape,'-b*', 'Linewidth', 1.5);
+%xlim([0,9]);
+xlabel('Time and windows','fontsize',20);
 ylabel('MAPE[%]','fontsize',20);
 set(gca,'XTick',0:9,'fontsize',17);
 %'0-8o''clock','8-16o''clock','16-24o''clock'
 set(gca,'XTicklabel',[]);
 yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
 for i = 1 : length(yLabels)
-    text(-0.5+1 * i,-0.5,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+    text(-0.7+1 * i,-0.5,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
 end
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
+set(h, 'FontSize', 15);
+
+%% 绘制 mae  折线图
+hybrid_1_mae = [0.005,0.0139,0.0086,0.0074,0.0111,0.0323,0.0135,0.014,0.0311];
+hybrid_5_mae = [0.0064,0.0156,0.0101,0.0083,0.0136,0.0359,0.0147,0.0182,0.043];
+lstm_mae = [0.009,0.021,0.0094,0.0064,0.0143,0.0342,0.0105,0.0157,0.035];
+sarma_mae = [0.0094,0.0212,0.0258,0.0104,0.019,0.0499,0.0225,0.0317,0.0479];
+
+figure('color','w');
+x = [0.5:8.5];
+plot(x,hybrid_1_mae,'-r*', 'Linewidth', 1.5);
+hold on;
+plot(x,hybrid_5_mae,'-k*', 'Linewidth', 1.5);
+plot(x,lstm_mae,'-g*', 'Linewidth', 1.5);
+plot(x,sarma_mae,'-b*', 'Linewidth', 1.5);
+ylim([0,0.055]);
+xlabel('Time and windows','fontsize',20);
+ylabel('MAE[V/m]','fontsize',20);
+set(gca,'XTick',0:9,'fontsize',17);
+%'0-8o''clock','8-16o''clock','16-24o''clock'
+set(gca,'XTicklabel',[]);
+yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
+for i = 1 : length(yLabels)
+    text(-0.7+1 * i,-0.002,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+end
+
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
