@@ -239,22 +239,32 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
+% 计算 整体指标
+observed = yuan(481:481+length(single_sum_pred)-1);
+mape = mean(abs((observed - single_sum_pred(:,2))./observed))*100
+mae = mean(abs(observed - single_sum_pred(:,2)))
+rmse = sqrt(mean((observed - single_sum_pred(:,2)).^2))
+res_junzhi = mean(observed - single_sum_pred(:,2));
+sde = sqrt(mean((observed - single_sum_pred(:,2) - res_junzhi).^2))
+p = corr(observed,single_sum_pred(:,2),'type','Pearson')
+
+
 mape_sar_cube = [];
 mae_sar_cube = [];
 rmse_sar_cube = [];
 sde_sar_cube = [];
 p_sar_cube = [];
-%计算 分段mape
+%计算 分段指标
 for i=1:9
     observed = yuan(481+40*(i-1):481+40*i-1);
     pre = single_sum_pred(1+(i-1)*40:40*i);
   
-    mape_fenduan = mean(abs((observed - pre)./observed))*100
-    mae_fenduan = mean(abs(observed - pre))
-    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    mape_fenduan = mean(abs((observed - pre)./observed))*100;
+    mae_fenduan = mean(abs(observed - pre));
+    rmse_fenduan = sqrt(mean((observed - pre).^2));
     res_junzhi = mean(observed - pre);
-    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
-    p_fenduan = corr(observed,pre,'type','Pearson')
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
+    p_fenduan = corr(observed,pre,'type','Pearson');
     
     mape_sar_cube = [mape_sar_cube mape_fenduan];
     mae_sar_cube = [mae_sar_cube mae_fenduan];
@@ -287,12 +297,17 @@ set(gca, 'YGrid', 'on');% 显示网格
 h = legend('The raw signal','LSTM  1-step','SARIMA  1-step','Hybrid method  5-steps','northeast');
 set(h, 'FontSize', 15);
 
-% 计算 整体mape
+% 计算 整体指标
 observed = yuan(481:481+length(lstm_pred)-1);
 mape = mean(abs((observed - lstm_pred(:,2))./observed))*100
 mae = mean(abs(observed - lstm_pred(:,2)))
+rmse = sqrt(mean((observed - lstm_pred(:,2)).^2))
+res_junzhi = mean(observed - lstm_pred(:,2));
+sde = sqrt(mean((observed - lstm_pred(:,2) - res_junzhi).^2))
+p = corr(observed,lstm_pred(:,2),'type','Pearson')
 
-%计算 分段mape
+
+%计算 分段指标
 mape_lstm_cube = [];
 mae_lstm_cube = [];
 rmse_lstm_cube = [];
@@ -306,12 +321,12 @@ for i=1:9
         observed = yuan(481+40*(i-1):481+40*i-1);
         pre = lstm_pred(1+(i-1)*40:40*i,2);
     end
-    mape_fenduan = mean(abs((observed - pre)./observed))*100
-    mae_fenduan = mean(abs(observed - pre))
-    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    mape_fenduan = mean(abs((observed - pre)./observed))*100;
+    mae_fenduan = mean(abs(observed - pre));
+    rmse_fenduan = sqrt(mean((observed - pre).^2));
     res_junzhi = mean(observed - pre);
-    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
-    p_fenduan = corr(observed,pre,'type','Pearson')
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
+    p_fenduan = corr(observed,pre,'type','Pearson');
     
     mape_lstm_cube = [mape_lstm_cube mape_fenduan];
     mae_lstm_cube = [mae_lstm_cube mae_fenduan];
@@ -451,13 +466,13 @@ plot(x,lstm_p,'-g*', 'Linewidth', 1.5);
 plot(x,sarma_p,'-b*', 'Linewidth', 1.5);
 ylim([0,1]);
 xlabel('Time and windows','fontsize',20);
-ylabel('Pearson','fontsize',20);
+ylabel('Pearson Correlation Coefficient','fontsize',20);
 set(gca,'XTick',0:9,'fontsize',17);
 %'0-8o''clock','8-16o''clock','16-24o''clock'
 set(gca,'XTicklabel',[]);
 yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
 for i = 1 : length(yLabels)
-    text(-0.7+1 * i,-0.002,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+    text(-0.7+1 * i,-0.025,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
 end
 
 set(gca, 'XGrid', 'on');% 显示网格

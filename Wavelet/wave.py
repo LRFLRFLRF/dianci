@@ -424,7 +424,7 @@ def main():
                          seasonal_order=(0, 1, 0, 48*2.5))
     #['2021-1-7':'2021-1-10']
     #动态预测
-    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
+    den_pred_dy = predict_DEN_dynamic(mod_DEN, sigDEN_resample, delt_t=12, step=3)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigDEN_resample['1/11/2021':'1/13/2021']
     pred_j = den_pred_dy['1/11/2021':'1/13/2021']
@@ -439,7 +439,7 @@ def main():
     #训练arima模型
     mod_RES = ARIMA_RES(sigRES_resample, order=(6, 0, 2))
     #动态预测
-    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=5)  #delt_t 采样时间间隔   step 预测步数
+    res_pred_dy = predict_RES_dynamic(mod_RES, sigRES_resample, delt_t=12, step=3)  #delt_t 采样时间间隔   step 预测步数
     #计算精度
     true_j = sigRES_resample['1/11/2021':'1/13/2021']
     pred_j = res_pred_dy['1/11/2021':'1/13/2021']
@@ -451,6 +451,10 @@ def main():
     ####单步预测####
     sum_pred = res_pred_dy + den_pred_dy
     #sum_pred.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sum_pred.xlsx', sheet_name='data1')
+    # 保存3步预测结果
+    #sum_pred.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sum_pred_3step.xlsx', sheet_name='data1')
+    # 保存10步预测结果
+    #sum_pred.to_excel(r'E:\Desktop\dianci\Python_code\mat\mat_python\sum_pred_10step.xlsx', sheet_name='data1')
     plot_sum(sum_pred, sig_resample)
 
     true_j = sig_resample['1/11/2021':'1/13/2021']

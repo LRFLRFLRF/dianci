@@ -28,14 +28,32 @@ fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 lstm_pred = getfield(dat, name);    %根据字段名读取数据
 
+%% 加载 sum 预测数据 10steps
+data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
+data_name = 'sum_pred_10step';
+%加载波形
+dat = load([data_path, data_name, '.mat']);   
+fieldname = fieldnames(dat);   %获取字段名
+name = fieldname{1};
+sum_pred_10step = getfield(dat, name);    %根据字段名读取数据
+
 %% 加载 sum 预测数据 5steps
 data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
-data_name = 'sum_pred';
+data_name = 'sum_pred_5step';
 %加载波形
 dat = load([data_path, data_name, '.mat']);   
 fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 sum_pred = getfield(dat, name);    %根据字段名读取数据
+
+%% 加载 sum 预测数据 3steps
+data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
+data_name = 'sum_pred_3step';
+%加载波形
+dat = load([data_path, data_name, '.mat']);   
+fieldname = fieldnames(dat);   %获取字段名
+name = fieldname{1};
+sum_pred_3step = getfield(dat, name);    %根据字段名读取数据
 
 %% 加载 sum 预测数据 1steps
 data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\';  
@@ -135,6 +153,33 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
+%% 绘制yuan数据 和 sum预测数据图 10step
+sum_pred_10step = sum_pred_10step(2:end);    %数据对齐！！！！！ 
+
+figure('color','w');
+plot(yuan,'black');
+hold on;
+x = [120*4+1:120*4+length(sum_pred_10step)];
+plot(x,sum_pred_10step','-r.');
+ylim([0.15,0.7]);
+xlim([0,7*120]);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
+set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+
+% 计算 整体指标
+observed = yuan(481:481+length(sum_pred_10step)-1);
+mape = mean(abs((observed - sum_pred_10step(:,1))./observed))*100
+mae = mean(abs(observed - sum_pred_10step(:,1)))
+rmse = sqrt(mean((observed - sum_pred_10step(:,1)).^2))
+res_junzhi = mean(observed - sum_pred_10step(:,1));
+sde = sqrt(mean((observed - sum_pred_10step(:,1) - res_junzhi).^2))
+p = corr(observed,sum_pred_10step(:,1),'type','Pearson')
+
+
 %% 绘制yuan数据 和 sum预测数据图 5steps
 figure('color','w');
 plot(yuan,'black');
@@ -149,6 +194,16 @@ set(gca,'XTick',1:120:120*7,'fontsize',20);
 set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
+
+% 计算 整体指标
+observed = yuan(481:481+length(sum_pred)-1);
+mape = mean(abs((observed - sum_pred(:,1))./observed))*100
+mae = mean(abs(observed - sum_pred(:,1)))
+rmse = sqrt(mean((observed - sum_pred(:,1)).^2))
+res_junzhi = mean(observed - sum_pred(:,1));
+sde = sqrt(mean((observed - sum_pred(:,1) - res_junzhi).^2))
+p = corr(observed,sum_pred(:,1),'type','Pearson')
+
 
 mape_sum5_cube = [];
 mae_sum5_cube = [];
@@ -165,12 +220,12 @@ for i=1:9
         pre = sum_pred(1+(i-1)*40:40*i);
     end
  
-    mape_fenduan = mean(abs((observed - pre)./observed))*100
-    mae_fenduan = mean(abs(observed - pre))
-    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    mape_fenduan = mean(abs((observed - pre)./observed))*100;
+    mae_fenduan = mean(abs(observed - pre));
+    rmse_fenduan = sqrt(mean((observed - pre).^2));
     res_junzhi = mean(observed - pre);
-    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
-    p_fenduan = corr(observed,pre,'type','Pearson')
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
+    p_fenduan = corr(observed,pre,'type','Pearson');
     
     mape_sum5_cube = [mape_sum5_cube mape_fenduan];
     mae_sum5_cube = [mae_sum5_cube mae_fenduan];
@@ -178,6 +233,33 @@ for i=1:9
     sde_sum5_cube = [sde_sum5_cube sde_fenduan];
     p_sum5_cube = [p_sum5_cube p_fenduan];
 end
+
+%% 绘制yuan数据 和 sum预测数据图 3step
+sum_pred_3step = sum_pred_3step(2:end);    %数据对齐！！！！！  就step为3时用到
+
+figure('color','w');
+plot(yuan,'black');
+hold on;
+x = [120*4+1:120*4+length(sum_pred_3step)];
+plot(x,sum_pred_3step','-r.');
+ylim([0.15,0.7]);
+xlim([0,7*120]);
+xlabel('Time[Day]','fontsize',20);
+ylabel('E[V/m]','fontsize',20);
+set(gca,'XTick',1:120:120*7,'fontsize',20);
+set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+
+% 计算 整体指标
+observed = yuan(481:481+length(sum_pred_3step)-1);
+mape = mean(abs((observed - sum_pred_3step(:,1))./observed))*100
+mae = mean(abs(observed - sum_pred_3step(:,1)))
+rmse = sqrt(mean((observed - sum_pred_3step(:,1)).^2))
+res_junzhi = mean(observed - sum_pred_3step(:,1));
+sde = sqrt(mean((observed - sum_pred_3step(:,1) - res_junzhi).^2))
+p = corr(observed,sum_pred_3step(:,1),'type','Pearson')
+
 
 %% 绘制yuan数据 和 sum预测数据图 1step
 figure('color','w');
@@ -194,6 +276,15 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
+% 计算 整体指标
+observed = yuan(481:481+length(sum_pred_1step)-1);
+mape = mean(abs((observed - sum_pred_1step(:,1))./observed))*100
+mae = mean(abs(observed - sum_pred_1step(:,1)))
+rmse = sqrt(mean((observed - sum_pred_1step(:,1)).^2))
+res_junzhi = mean(observed - sum_pred_1step(:,1));
+sde = sqrt(mean((observed - sum_pred_1step(:,1) - res_junzhi).^2))
+p = corr(observed,sum_pred_1step(:,1),'type','Pearson')
+
 mape_sum1_cube = [];
 mae_sum1_cube = [];
 rmse_sum1_cube = [];
@@ -209,12 +300,12 @@ for i=1:9
         pre = sum_pred_1step(1+(i-1)*40:40*i);
     end
  
-    mape_fenduan = mean(abs((observed - pre)./observed))*100
-    mae_fenduan = mean(abs(observed - pre))
-    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    mape_fenduan = mean(abs((observed - pre)./observed))*100;
+    mae_fenduan = mean(abs(observed - pre));
+    rmse_fenduan = sqrt(mean((observed - pre).^2));
     res_junzhi = mean(observed - pre);
-    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
-    p_fenduan = corr(observed,pre,'type','Pearson')
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
+    p_fenduan = corr(observed,pre,'type','Pearson');
     
     mape_sum1_cube = [mape_sum1_cube mape_fenduan];
     mae_sum1_cube = [mae_sum1_cube mae_fenduan];
@@ -239,6 +330,16 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
+% 计算 整体指标
+observed = yuan(481:481+length(single_sum_pred)-1);
+mape = mean(abs((observed - single_sum_pred(:,1))./observed))*100
+mae = mean(abs(observed - single_sum_pred(:,1)))
+rmse = sqrt(mean((observed - single_sum_pred(:,1)).^2))
+res_junzhi = mean(observed - single_sum_pred(:,1));
+sde = sqrt(mean((observed - single_sum_pred(:,1) - res_junzhi).^2))
+p = corr(observed,single_sum_pred(:,1),'type','Pearson')
+
+
 mape_sar_cube = [];
 mae_sar_cube = [];
 rmse_sar_cube = [];
@@ -249,12 +350,12 @@ for i=1:9
     observed = yuan(481+40*(i-1):481+40*i-1);
     pre = single_sum_pred(1+(i-1)*40:40*i);
   
-    mape_fenduan = mean(abs((observed - pre)./observed))*100
-    mae_fenduan = mean(abs(observed - pre))
-    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    mape_fenduan = mean(abs((observed - pre)./observed))*100;
+    mae_fenduan = mean(abs(observed - pre));
+    rmse_fenduan = sqrt(mean((observed - pre).^2));
     res_junzhi = mean(observed - pre);
-    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
-    p_fenduan = corr(observed,pre,'type','Pearson')
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
+    p_fenduan = corr(observed,pre,'type','Pearson');
     
     mape_sar_cube = [mape_sar_cube mape_fenduan];
     mae_sar_cube = [mae_sar_cube mae_fenduan];
@@ -287,12 +388,17 @@ set(gca, 'YGrid', 'on');% 显示网格
 h = legend('The raw signal','LSTM  1-step','SARIMA  1-step','Hybrid method  5-steps','northeast');
 set(h, 'FontSize', 15);
 
-% 计算 整体mape
+% 计算 整体指标
 observed = yuan(481:481+length(lstm_pred)-1);
 mape = mean(abs((observed - lstm_pred(:,2))./observed))*100
 mae = mean(abs(observed - lstm_pred(:,2)))
+rmse = sqrt(mean((observed - lstm_pred(:,2)).^2))
+res_junzhi = mean(observed - lstm_pred(:,2));
+sde = sqrt(mean((observed - lstm_pred(:,2) - res_junzhi).^2))
+p = corr(observed,lstm_pred(:,2),'type','Pearson')
 
-%计算 分段mape
+
+%计算 分段指标
 mape_lstm_cube = [];
 mae_lstm_cube = [];
 rmse_lstm_cube = [];
@@ -306,12 +412,12 @@ for i=1:9
         observed = yuan(481+40*(i-1):481+40*i-1);
         pre = lstm_pred(1+(i-1)*40:40*i,2);
     end
-    mape_fenduan = mean(abs((observed - pre)./observed))*100
-    mae_fenduan = mean(abs(observed - pre))
-    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    mape_fenduan = mean(abs((observed - pre)./observed))*100;
+    mae_fenduan = mean(abs(observed - pre));
+    rmse_fenduan = sqrt(mean((observed - pre).^2));
     res_junzhi = mean(observed - pre);
-    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
-    p_fenduan = corr(observed,pre,'type','Pearson')
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
+    p_fenduan = corr(observed,pre,'type','Pearson');
     
     mape_lstm_cube = [mape_lstm_cube mape_fenduan];
     mae_lstm_cube = [mae_lstm_cube mae_fenduan];
