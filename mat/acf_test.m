@@ -150,6 +150,11 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
+mape_sum5_cube = [];
+mae_sum5_cube = [];
+rmse_sum5_cube = [];
+sde_sum5_cube = [];
+p_sum5_cube = [];
 %计算 分段mape
 for i=1:9
     if i==9
@@ -162,6 +167,16 @@ for i=1:9
  
     mape_fenduan = mean(abs((observed - pre)./observed))*100
     mae_fenduan = mean(abs(observed - pre))
+    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    res_junzhi = mean(observed - pre);
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
+    p_fenduan = corr(observed,pre,'type','Pearson')
+    
+    mape_sum5_cube = [mape_sum5_cube mape_fenduan];
+    mae_sum5_cube = [mae_sum5_cube mae_fenduan];
+    rmse_sum5_cube = [rmse_sum5_cube rmse_fenduan];
+    sde_sum5_cube = [sde_sum5_cube sde_fenduan];
+    p_sum5_cube = [p_sum5_cube p_fenduan];
 end
 
 %% 绘制yuan数据 和 sum预测数据图 1step
@@ -179,6 +194,11 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
+mape_sum1_cube = [];
+mae_sum1_cube = [];
+rmse_sum1_cube = [];
+sde_sum1_cube = [];
+p_sum1_cube = [];
 %计算 分段mape
 for i=1:9
     if i==9
@@ -191,6 +211,16 @@ for i=1:9
  
     mape_fenduan = mean(abs((observed - pre)./observed))*100
     mae_fenduan = mean(abs(observed - pre))
+    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    res_junzhi = mean(observed - pre);
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
+    p_fenduan = corr(observed,pre,'type','Pearson')
+    
+    mape_sum1_cube = [mape_sum1_cube mape_fenduan];
+    mae_sum1_cube = [mae_sum1_cube mae_fenduan];
+    rmse_sum1_cube = [rmse_sum1_cube rmse_fenduan];
+    sde_sum1_cube = [sde_sum1_cube sde_fenduan];
+    p_sum1_cube = [p_sum1_cube p_fenduan];
 end
 
 
@@ -209,13 +239,28 @@ set(gca,'XTicklabel',{'1','2','3','4','5','6','7','8'})
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格
 
-%计算 分段mape
+mape_sar_cube = [];
+mae_sar_cube = [];
+rmse_sar_cube = [];
+sde_sar_cube = [];
+p_sar_cube = [];
+%计算 分段指标
 for i=1:9
     observed = yuan(481+40*(i-1):481+40*i-1);
     pre = single_sum_pred(1+(i-1)*40:40*i);
   
     mape_fenduan = mean(abs((observed - pre)./observed))*100
     mae_fenduan = mean(abs(observed - pre))
+    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    res_junzhi = mean(observed - pre);
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
+    p_fenduan = corr(observed,pre,'type','Pearson')
+    
+    mape_sar_cube = [mape_sar_cube mape_fenduan];
+    mae_sar_cube = [mae_sar_cube mae_fenduan];
+    rmse_sar_cube = [rmse_sar_cube rmse_fenduan];
+    sde_sar_cube = [sde_sar_cube sde_fenduan];
+    p_sar_cube = [p_sar_cube p_fenduan];
 end
 
 
@@ -248,6 +293,11 @@ mape = mean(abs((observed - lstm_pred(:,2))./observed))*100
 mae = mean(abs(observed - lstm_pred(:,2)))
 
 %计算 分段mape
+mape_lstm_cube = [];
+mae_lstm_cube = [];
+rmse_lstm_cube = [];
+sde_lstm_cube = [];
+p_lstm_cube = [];
 for i=1:9
     if i==9
         observed = yuan(481+40*(i-1):end-4);
@@ -258,6 +308,16 @@ for i=1:9
     end
     mape_fenduan = mean(abs((observed - pre)./observed))*100
     mae_fenduan = mean(abs(observed - pre))
+    rmse_fenduan = sqrt(mean((observed - pre).^2))
+    res_junzhi = mean(observed - pre);
+    sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2))
+    p_fenduan = corr(observed,pre,'type','Pearson')
+    
+    mape_lstm_cube = [mape_lstm_cube mape_fenduan];
+    mae_lstm_cube = [mae_lstm_cube mae_fenduan];
+    rmse_lstm_cube = [rmse_lstm_cube rmse_fenduan];
+    sde_lstm_cube = [sde_lstm_cube sde_fenduan];
+    p_lstm_cube = [p_lstm_cube p_fenduan];
 end
 
 %% 绘制mape折线图
@@ -318,4 +378,89 @@ set(gca, 'YGrid', 'on');% 显示网格
 h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
 set(h, 'FontSize', 15);
 
+%% 绘制 rmse  折线图
+hybrid_1_rmse = rmse_sum1_cube;
+hybrid_5_rmse = rmse_sum5_cube;
+lstm_rmse = rmse_lstm_cube;
+sarma_rmse = rmse_sar_cube;
 
+figure('color','w');
+x = [0.5:8.5];
+plot(x,hybrid_1_rmse,'-r*', 'Linewidth', 1.5);
+hold on;
+plot(x,hybrid_5_rmse,'-k*', 'Linewidth', 1.5);
+plot(x,lstm_rmse,'-g*', 'Linewidth', 1.5);
+plot(x,sarma_rmse,'-b*', 'Linewidth', 1.5);
+ylim([0,0.09]);
+xlabel('Time and windows','fontsize',20);
+ylabel('RMSE[V/m]','fontsize',20);
+set(gca,'XTick',0:9,'fontsize',17);
+%'0-8o''clock','8-16o''clock','16-24o''clock'
+set(gca,'XTicklabel',[]);
+yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
+for i = 1 : length(yLabels)
+    text(-0.7+1 * i,-0.002,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+end
+
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
+set(h, 'FontSize', 15);
+
+%% 绘制 SDE  折线图
+hybrid_1_sde = sde_sum1_cube;
+hybrid_5_sde = sde_sum5_cube;
+lstm_sde = sde_lstm_cube;
+sarma_sde = sde_sar_cube;
+
+figure('color','w');
+x = [0.5:8.5];
+plot(x,hybrid_1_sde,'-r*', 'Linewidth', 1.5);
+hold on;
+plot(x,hybrid_5_sde,'-k*', 'Linewidth', 1.5);
+plot(x,lstm_sde,'-g*', 'Linewidth', 1.5);
+plot(x,sarma_sde,'-b*', 'Linewidth', 1.5);
+ylim([0,0.09]);
+xlabel('Time and windows','fontsize',20);
+ylabel('SDE[V/m]','fontsize',20);
+set(gca,'XTick',0:9,'fontsize',17);
+%'0-8o''clock','8-16o''clock','16-24o''clock'
+set(gca,'XTicklabel',[]);
+yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
+for i = 1 : length(yLabels)
+    text(-0.7+1 * i,-0.002,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+end
+
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
+set(h, 'FontSize', 15);
+
+%% 绘制 Pearson 折线图
+hybrid_1_p = p_sum1_cube;
+hybrid_5_p = p_sum5_cube;
+lstm_p = p_lstm_cube;
+sarma_p = p_sar_cube;
+
+figure('color','w');
+x = [0.5:8.5];
+plot(x,hybrid_1_p,'-r*', 'Linewidth', 1.5);
+hold on;
+plot(x,hybrid_5_p,'-k*', 'Linewidth', 1.5);
+plot(x,lstm_p,'-g*', 'Linewidth', 1.5);
+plot(x,sarma_p,'-b*', 'Linewidth', 1.5);
+ylim([0,1]);
+xlabel('Time and windows','fontsize',20);
+ylabel('Pearson Correlation Coefficient','fontsize',20);
+set(gca,'XTick',0:9,'fontsize',17);
+%'0-8o''clock','8-16o''clock','16-24o''clock'
+set(gca,'XTicklabel',[]);
+yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
+for i = 1 : length(yLabels)
+    text(-0.7+1 * i,-0.025,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+end
+
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
+set(h, 'FontSize', 15);
