@@ -179,7 +179,9 @@ res_junzhi = mean(observed - sum_pred_10step(:,1));
 sde = sqrt(mean((observed - sum_pred_10step(:,1) - res_junzhi).^2))
 p = corr(observed,sum_pred_10step(:,1),'type','Pearson')
 
-
+SS_res = sum((observed-sum_pred_10step(:,1)).^2);  %残差平方和
+SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+r = 1-(SS_res/SS_tot)
 %% 绘制yuan数据 和 sum预测数据图 5steps
 figure('color','w');
 plot(yuan,'black');
@@ -204,12 +206,16 @@ res_junzhi = mean(observed - sum_pred(:,1));
 sde = sqrt(mean((observed - sum_pred(:,1) - res_junzhi).^2))
 p = corr(observed,sum_pred(:,1),'type','Pearson')
 
+SS_res = sum((observed-sum_pred(:,1)).^2);  %残差平方和
+SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+r = 1-(SS_res/SS_tot)
 
 mape_sum5_cube = [];
 mae_sum5_cube = [];
 rmse_sum5_cube = [];
 sde_sum5_cube = [];
 p_sum5_cube = [];
+r_sum5_cube = [];
 %计算 分段mape
 for i=1:9
     if i==9
@@ -227,11 +233,16 @@ for i=1:9
     sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
     p_fenduan = corr(observed,pre,'type','Pearson');
     
+    SS_res = sum((observed-pre).^2);  %残差平方和
+    SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+    r_fenduan = 1-(SS_res/SS_tot);
+    
     mape_sum5_cube = [mape_sum5_cube mape_fenduan];
     mae_sum5_cube = [mae_sum5_cube mae_fenduan];
     rmse_sum5_cube = [rmse_sum5_cube rmse_fenduan];
     sde_sum5_cube = [sde_sum5_cube sde_fenduan];
     p_sum5_cube = [p_sum5_cube p_fenduan];
+    r_sum5_cube = [r_sum5_cube r_fenduan];
 end
 
 %% 绘制yuan数据 和 sum预测数据图 3step
@@ -260,6 +271,9 @@ res_junzhi = mean(observed - sum_pred_3step(:,1));
 sde = sqrt(mean((observed - sum_pred_3step(:,1) - res_junzhi).^2))
 p = corr(observed,sum_pred_3step(:,1),'type','Pearson')
 
+SS_res = sum((observed-sum_pred_3step(:,1)).^2);  %残差平方和
+SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+r = 1-(SS_res/SS_tot)
 
 %% 绘制yuan数据 和 sum预测数据图 1step
 figure('color','w');
@@ -285,11 +299,16 @@ res_junzhi = mean(observed - sum_pred_1step(:,1));
 sde = sqrt(mean((observed - sum_pred_1step(:,1) - res_junzhi).^2))
 p = corr(observed,sum_pred_1step(:,1),'type','Pearson')
 
+SS_res = sum((observed-sum_pred_1step(:,1)).^2);  %残差平方和
+SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+r = 1-(SS_res/SS_tot)
+
 mape_sum1_cube = [];
 mae_sum1_cube = [];
 rmse_sum1_cube = [];
 sde_sum1_cube = [];
 p_sum1_cube = [];
+r_sum1_cube = [];
 %计算 分段mape
 for i=1:9
     if i==9
@@ -307,11 +326,16 @@ for i=1:9
     sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
     p_fenduan = corr(observed,pre,'type','Pearson');
     
+    SS_res = sum((observed-pre).^2);  %残差平方和
+    SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+    r_fenduan = 1-(SS_res/SS_tot);
+    
     mape_sum1_cube = [mape_sum1_cube mape_fenduan];
     mae_sum1_cube = [mae_sum1_cube mae_fenduan];
     rmse_sum1_cube = [rmse_sum1_cube rmse_fenduan];
     sde_sum1_cube = [sde_sum1_cube sde_fenduan];
     p_sum1_cube = [p_sum1_cube p_fenduan];
+    r_sum1_cube = [r_sum1_cube r_fenduan];
 end
 
 
@@ -339,12 +363,16 @@ res_junzhi = mean(observed - single_sum_pred(:,1));
 sde = sqrt(mean((observed - single_sum_pred(:,1) - res_junzhi).^2))
 p = corr(observed,single_sum_pred(:,1),'type','Pearson')
 
+SS_res = sum((observed-single_sum_pred(:,1)).^2);  %残差平方和
+SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+r = 1-(SS_res/SS_tot)
 
 mape_sar_cube = [];
 mae_sar_cube = [];
 rmse_sar_cube = [];
 sde_sar_cube = [];
 p_sar_cube = [];
+r_sar_cube = [];
 %计算 分段指标
 for i=1:9
     observed = yuan(481+40*(i-1):481+40*i-1);
@@ -357,11 +385,16 @@ for i=1:9
     sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
     p_fenduan = corr(observed,pre,'type','Pearson');
     
+    SS_res = sum((observed-pre).^2);  %残差平方和
+    SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+    r_fenduan = 1-(SS_res/SS_tot);
+    
     mape_sar_cube = [mape_sar_cube mape_fenduan];
     mae_sar_cube = [mae_sar_cube mae_fenduan];
     rmse_sar_cube = [rmse_sar_cube rmse_fenduan];
     sde_sar_cube = [sde_sar_cube sde_fenduan];
     p_sar_cube = [p_sar_cube p_fenduan];
+    r_sar_cube = [r_sar_cube r_fenduan];
 end
 
 
@@ -397,6 +430,9 @@ res_junzhi = mean(observed - lstm_pred(:,2));
 sde = sqrt(mean((observed - lstm_pred(:,2) - res_junzhi).^2))
 p = corr(observed,lstm_pred(:,2),'type','Pearson')
 
+SS_res = sum((observed-lstm_pred(:,2)).^2);  %残差平方和
+SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+r = 1-(SS_res/SS_tot)
 
 %计算 分段指标
 mape_lstm_cube = [];
@@ -404,6 +440,7 @@ mae_lstm_cube = [];
 rmse_lstm_cube = [];
 sde_lstm_cube = [];
 p_lstm_cube = [];
+r_lstm_cube = [];
 for i=1:9
     if i==9
         observed = yuan(481+40*(i-1):end-4);
@@ -419,11 +456,16 @@ for i=1:9
     sde_fenduan = sqrt(mean((observed - pre - res_junzhi).^2));
     p_fenduan = corr(observed,pre,'type','Pearson');
     
+    SS_res = sum((observed-pre).^2);  %残差平方和
+    SS_tot = sum((observed - mean(observed)).^2);  %总平方和
+    r_fenduan = 1-(SS_res/SS_tot);
+    
     mape_lstm_cube = [mape_lstm_cube mape_fenduan];
     mae_lstm_cube = [mae_lstm_cube mae_fenduan];
     rmse_lstm_cube = [rmse_lstm_cube rmse_fenduan];
     sde_lstm_cube = [sde_lstm_cube sde_fenduan];
     p_lstm_cube = [p_lstm_cube p_fenduan];
+    r_lstm_cube = [r_lstm_cube r_fenduan];
 end
 
 %% 绘制mape折线图
@@ -558,6 +600,35 @@ plot(x,sarma_p,'-b*', 'Linewidth', 1.5);
 ylim([0,1]);
 xlabel('Time and windows','fontsize',20);
 ylabel('Pearson Correlation Coefficient','fontsize',20);
+set(gca,'XTick',0:9,'fontsize',17);
+%'0-8o''clock','8-16o''clock','16-24o''clock'
+set(gca,'XTicklabel',[]);
+yLabels = {'5-A','5-B','5-C','6-A','6-B','6-C','7-A','7-B','7-C'};
+for i = 1 : length(yLabels)
+    text(-0.7+1 * i,-0.025,  yLabels(i),'fontsize',17);   % 用文本的方式添加，位置可以自定义
+end
+
+set(gca, 'XGrid', 'on');% 显示网格
+set(gca, 'YGrid', 'on');% 显示网格
+h = legend('Hybrid method  1-step','Hybrid method  5-steps','LSTM  1-step','SARIMA  1-step','northeast');
+set(h, 'FontSize', 15);
+
+%% 绘制 R2 折线图
+hybrid_1_r = r_sum1_cube;
+hybrid_5_r = r_sum5_cube;
+lstm_r = r_lstm_cube;
+sarma_r = r_sar_cube;
+
+figure('color','w');
+x = [0.5:8.5];
+plot(x,hybrid_1_r,'-r*', 'Linewidth', 1.5);
+hold on;
+plot(x,hybrid_5_r,'-k*', 'Linewidth', 1.5);
+plot(x,lstm_r,'-g*', 'Linewidth', 1.5);
+plot(x,sarma_r,'-b*', 'Linewidth', 1.5);
+ylim([0,1]);
+xlabel('Time and windows','fontsize',20);
+ylabel('Coefficient of Determination R^2','fontsize',20);
 set(gca,'XTick',0:9,'fontsize',17);
 %'0-8o''clock','8-16o''clock','16-24o''clock'
 set(gca,'XTicklabel',[]);

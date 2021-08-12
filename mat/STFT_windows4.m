@@ -144,7 +144,7 @@ result = [MF;
 
 %% 指标显示
 % 坐标轴下方显示 FC指标
-text(-0.3, 1+0.05, 'FC:','FontSize',20);  %显示指标名称
+text(-0.3, 1+0.05, 'NCF:','FontSize',18);  %显示指标名称
 reshape_mat = reshape(FC, 4, 7);  %方便求每天FC最大值
 [max1, loc_max] = max(reshape_mat,[],1);   %max  最大值  loc最大值位置
 [min1, loc_min] = min(reshape_mat,[],1);   %min  最小值  loc最小值位置
