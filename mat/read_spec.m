@@ -1,5 +1,5 @@
 %% 显示spec_mat
-data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\spec_mat\';  
+data_path = 'E:\Desktop\dianci\sample_data\20210808\spec_mat\';  
 band = 1e6*[[870 880];[935 960];[1805 1840];[1840 1875];[2110 2170];[2400 2483];[2555 2655]];
 [m, n] = size(band); %波段数和波段起止频率
 file_number = size(dir(data_path));  %路径下文件数量

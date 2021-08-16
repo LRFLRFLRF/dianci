@@ -112,5 +112,5 @@ file_number = size(dir(filepath))  %路径下文件数量
 for i = 11565:file_number
     file=dir([filepath num2str(i) ';*']); 
     data_1 = xlsread([filepath,file.name]);
-    save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_mat\' file.name(1:end-4) '.mat'],'data_1')
+    save(['E:\Desktop\dianci\sample_data\20210808\spec_mat\' file.name(1:end-4) '.mat'],'data_1')
 end
