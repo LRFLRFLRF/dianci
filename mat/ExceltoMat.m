@@ -104,13 +104,13 @@ save('E:\Desktop\dianci\Python_code\mat\106to114_15s.mat','data');
 save('E:\Desktop\dianci\Python_code\mat\106to114_oneDim_15s.mat','data_val')
 
 %% 加载spec csv文件至mat
-filepath = 'E:\Desktop\dianci\sample_data\20210808\spectrum_csv1\';
+filepath = 'E:\Desktop\dianci\sample_data\20210816\spectrum_csv\';
 %filename = {'8;SPECTRUM;08-Aug-2021 13_44_05'};
 
 file_number = size(dir(filepath))  %路径下文件数量
 %遍历csv文件到mat
-for i = 11565:file_number
+for i = 1:file_number
     file=dir([filepath num2str(i) ';*']); 
     data_1 = xlsread([filepath,file.name]);
-    save(['E:\Desktop\dianci\sample_data\20210808\spec_mat\' file.name(1:end-4) '.mat'],'data_1')
+    save(['E:\Desktop\dianci\sample_data\20210816\spec_mat\' file.name(1:end-4) '.mat'],'data_1')
 end
