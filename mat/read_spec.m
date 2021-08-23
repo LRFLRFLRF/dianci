@@ -47,16 +47,17 @@ for j = 1:2   %遍历两个trace
             %信道峰值
             peak = max(tra(:,1));
             res_peak(i,b) = peak;
+            
         end 
     end
     %%保存
     if j == 1 
         save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace1\res_SR_band.mat'],'res_sr')
-        save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace1\res_RMSE_band.mat'],'res_rmse')
+        save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace1\res_RMS_band.mat'],'res_rmse')
         save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace1\res_PEAK_band.mat'],'res_peak')
     else
         save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace2\res_SR_band.mat'],'res_sr')
-        save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace2\res_RMSE_band.mat'],'res_rmse')
+        save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace2\res_RMS_band.mat'],'res_rmse')
         save(['E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace2\res_PEAK_band.mat'],'res_peak')
     end  
 end
@@ -77,31 +78,31 @@ plot(Vm(:,2), Vm(:,1));
 
 
 %% 从mat加载计算结果
-data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace1\'; 
-data_name = 'res_RMSE.mat';
+data_path = 'E:\Desktop\dianci\Python_code\mat\mat_python\spec_cal_result\20210816\trace2\'; 
+data_name = 'res_RMS_band.mat';
 dat = load([data_path data_name]);   
 fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
-rmse = getfield(dat, name);    %根据字段名读取数据
+rms = getfield(dat, name);    %根据字段名读取数据
 
-data_name = 'res_SR.mat';
+data_name = 'res_SR_band.mat';
 dat = load([data_path data_name]);   
 fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 sr = getfield(dat, name);    %根据字段名读取数据
-[m, n] = size(sr)
+
 
 data_name = 'res_PEAK_band.mat';
 dat = load([data_path data_name]);   
 fieldname = fieldnames(dat);   %获取字段名
 name = fieldname{1};
 peak = getfield(dat, name);    %根据字段名读取数据
-[m, n] = size(sr)
+
 
 
 
 %% 
-aa = peak;
+aa = rms;
 gsm900 = sqrt(sum(aa(:,1:4).^2,2));
 dcs1800 = sqrt(sum(aa(:,5:6).^2,2));
 utms2100 = sqrt(sum(aa(:,7:9).^2,2));
@@ -163,7 +164,7 @@ ylabel('Density','FontSize',20);
 [m, n] = size(bandtable);
 total = sqrt(sum(bandtable(:,1:n).^2,2));
 figure('color','w');
-plot(N,20*log(total),'black', 'Linewidth', 1.5);
+plot(N,20*log(total),'black', 'Linewidth', 1.5);%20*log(total)
 datetick(gca,'x','HH:MM');
 set(gca, 'XGrid', 'on');% 显示网格
 set(gca, 'YGrid', 'on');% 显示网格

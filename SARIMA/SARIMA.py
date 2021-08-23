@@ -13,11 +13,11 @@ plt.rcParams['figure.figsize'] = 28, 18
 plt.rcParams['font.sans-serif'] = [u'SimHei']
 plt.rcParams['axes.unicode_minus'] = False
 
-file = pd.read_excel(r'F:\Desktop\dianci\sample_data\20201128-20201205-market\result\20201128-20201205time-chang-rms.xls')
+file = pd.read_excel(r'E:\Desktop\dianci\sample_data\20201128-20201205-market\result\20201128-20201205time-chang-rms.xls')
 rng = pd.date_range(start='11/28/2020 9:23:00', periods=1999, freq='6T')  #end='12/06/2018 17:11:00'
 df1 = pd.Series(np.array(file['rms_val']), index=rng)
 
-df2 = df1.resample('12T').mean()   #三十分钟重采样
+df2 = df1.resample('6T').mean()   #三十分钟重采样
 df = df2['11/29/2020':'12/4/2020']
 
 def plot_data(df):
@@ -136,7 +136,7 @@ def predict_future(res, df2, pre_len):
 def main():
     #绘制原数据
     plot_data(df['11/29/2020':'12/5/2020'])
-
+    df.to_excel(r'E:\Desktop\dianci\sample_data\20201128-20201205-market\result\resample_6.xlsx', sheet_name='data1')
     #暴力求解aic 模型定阶
     #cal(df)
 

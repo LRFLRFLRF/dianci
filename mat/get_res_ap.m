@@ -25,11 +25,11 @@ function get_res_ap()
 
     %% 写入excel
     write_date_den = [data_yuan(:,1:5) data_node];  %拼接原表格前五列时间数据
-    xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_DEN.xls'], write_date_den)    %写入指定结点的 construc波形
+    %xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_DEN.xls'], write_date_den)    %写入指定结点的 construc波形
 
     res = data_yuan(:,6) - data_node; %计算残差
     write_date_res = [data_yuan(:,1:5) res];
-    xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_RES.xls'], write_date_res)    %写入指定结点的 残差波形
+    %xlswrite(['E:\Desktop\dianci\Python_code\mat\mat_xls_file\', node_data_name, '_RES.xls'], write_date_res)    %写入指定结点的 残差波形
 
 %% 绘图
 figure('color','w');
